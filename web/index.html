@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08111f" />
+  <title>Upright</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Hybrid posture coach</p>
+        <h1>Upright</h1>
+      </div>
+      <span id="modeBadge" class="badge">Detecting…</span>
+    </header>
+
+    <section class="grid">
+      <article class="card status-card">
+        <div class="section-title">
+          <h2>Sensor</h2>
+          <button id="settingsBtn" class="ghost" type="button">Settings</button>
+        </div>
+        <dl class="status-list">
+          <div><dt>Mode</dt><dd id="modeValue">—</dd></div>
+          <div><dt>Permission</dt><dd id="permissionValue">—</dd></div>
+          <div><dt>Connection</dt><dd id="connectionValue">—</dd></div>
+          <div><dt>Device</dt><dd id="deviceValue">—</dd></div>
+          <div><dt>Rate</dt><dd id="rateValue">—</dd></div>
+        </dl>
+        <div class="button-row">
+          <button id="permissionBtn" class="primary" type="button">Request Permission</button>
+          <button id="calibrateBtn" class="secondary" type="button">Calibrate Neutral</button>
+        </div>
+      </article>
+
+      <article class="card posture-card">
+        <div class="section-title">
+          <h2>Posture</h2>
+          <span id="posturePill" class="pill unknown">Unknown</span>
+        </div>
+        <div class="gauge">
+          <div id="gaugeFill" class="gauge-fill"></div>
+          <strong id="scoreValue">0</strong>
+          <span>slouch score</span>
+        </div>
+        <p id="postureCopy" class="muted">Start a session to begin tracking.</p>
+      </article>
+
+      <article class="card timer-card">
+        <div class="section-title">
+          <h2>Focus Timer</h2>
+          <span id="timerLabel" class="timer-label">25:00</span>
+        </div>
+        <div class="button-row">
+          <button id="startBtn" class="primary wide" type="button">Start Session</button>
+          <button id="stopBtn" class="danger wide" type="button" disabled>Stop</button>
+        </div>
+        <div class="mini-actions">
+          <button id="hapticBtn" class="ghost small" type="button">Haptic</button>
+          <button id="speakBtn" class="ghost small" type="button">Speak</button>
+          <button id="resetBtn" class="ghost small" type="button">Reset</button>
+        </div>
+      </article>
+
+      <article class="card chart-card">
+        <div class="section-title">
+          <h2>Motion</h2>
+          <span id="sampleCount" class="muted">0 samples</span>
+        </div>
+        <canvas id="motionChart" width="900" height="260" aria-label="Pitch and roll chart"></canvas>
+      </article>
+
+      <article class="card log-card">
+        <div class="section-title">
+          <h2>Events</h2>
+          <button id="clearLogBtn" class="ghost small" type="button">Clear</button>
+        </div>
+        <ul id="eventLog" class="event-log"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="./bridge-sdk.js"></script>
+  <script type="module" src="./posture-core.js"></script>
+  <script type="module" src="./mock-bridge.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

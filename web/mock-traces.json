@@ -1,0 +1,1126 @@
+{
+  "name": "mock-airpods-neutral-to-slouch",
+  "sampleRateHz": 25,
+  "samples": [
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.01,
+        "roll": -0.01,
+        "yaw": 0.03
+      },
+      "gravity": {
+        "x": 0.0,
+        "y": 0.02,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.016,
+        "roll": -0.007,
+        "yaw": 0.0299
+      },
+      "gravity": {
+        "x": 0.0025,
+        "y": 0.0198,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.022,
+        "roll": -0.0042,
+        "yaw": 0.0294
+      },
+      "gravity": {
+        "x": 0.0049,
+        "y": 0.0194,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.028,
+        "roll": -0.0018,
+        "yaw": 0.0288
+      },
+      "gravity": {
+        "x": 0.0073,
+        "y": 0.0186,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.034,
+        "roll": 0.0001,
+        "yaw": 0.0279
+      },
+      "gravity": {
+        "x": 0.0096,
+        "y": 0.0176,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.04,
+        "roll": 0.0014,
+        "yaw": 0.0267
+      },
+      "gravity": {
+        "x": 0.0117,
+        "y": 0.0162,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.046,
+        "roll": 0.002,
+        "yaw": 0.0254
+      },
+      "gravity": {
+        "x": 0.0136,
+        "y": 0.0146,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.052,
+        "roll": 0.0018,
+        "yaw": 0.0239
+      },
+      "gravity": {
+        "x": 0.0154,
+        "y": 0.0128,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.058,
+        "roll": 0.0009,
+        "yaw": 0.0224
+      },
+      "gravity": {
+        "x": 0.0168,
+        "y": 0.0108,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.064,
+        "roll": -0.0007,
+        "yaw": 0.0207
+      },
+      "gravity": {
+        "x": 0.018,
+        "y": 0.0086,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.07,
+        "roll": -0.0028,
+        "yaw": 0.019
+      },
+      "gravity": {
+        "x": 0.019,
+        "y": 0.0063,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.076,
+        "roll": -0.0054,
+        "yaw": 0.0174
+      },
+      "gravity": {
+        "x": 0.0196,
+        "y": 0.0039,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.082,
+        "roll": -0.0083,
+        "yaw": 0.0158
+      },
+      "gravity": {
+        "x": 0.0199,
+        "y": 0.0014,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.088,
+        "roll": -0.0113,
+        "yaw": 0.0144
+      },
+      "gravity": {
+        "x": 0.02,
+        "y": -0.0011,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.094,
+        "roll": -0.0142,
+        "yaw": 0.0131
+      },
+      "gravity": {
+        "x": 0.0197,
+        "y": -0.0036,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.1,
+        "roll": -0.0169,
+        "yaw": 0.012
+      },
+      "gravity": {
+        "x": 0.0191,
+        "y": -0.006,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.106,
+        "roll": -0.0191,
+        "yaw": 0.0111
+      },
+      "gravity": {
+        "x": 0.0182,
+        "y": -0.0083,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.112,
+        "roll": -0.0207,
+        "yaw": 0.0105
+      },
+      "gravity": {
+        "x": 0.017,
+        "y": -0.0105,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.118,
+        "roll": -0.0217,
+        "yaw": 0.0101
+      },
+      "gravity": {
+        "x": 0.0156,
+        "y": -0.0126,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.124,
+        "roll": -0.022,
+        "yaw": 0.01
+      },
+      "gravity": {
+        "x": 0.0139,
+        "y": -0.0144,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.13,
+        "roll": -0.0215,
+        "yaw": 0.0102
+      },
+      "gravity": {
+        "x": 0.012,
+        "y": -0.016,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.136,
+        "roll": -0.0203,
+        "yaw": 0.0106
+      },
+      "gravity": {
+        "x": 0.0099,
+        "y": -0.0174,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.142,
+        "roll": -0.0185,
+        "yaw": 0.0113
+      },
+      "gravity": {
+        "x": 0.0076,
+        "y": -0.0185,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.148,
+        "roll": -0.0161,
+        "yaw": 0.0123
+      },
+      "gravity": {
+        "x": 0.0053,
+        "y": -0.0193,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.154,
+        "roll": -0.0134,
+        "yaw": 0.0135
+      },
+      "gravity": {
+        "x": 0.0028,
+        "y": -0.0198,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.16,
+        "roll": -0.0104,
+        "yaw": 0.0148
+      },
+      "gravity": {
+        "x": 0.0003,
+        "y": -0.02,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.166,
+        "roll": -0.0074,
+        "yaw": 0.0163
+      },
+      "gravity": {
+        "x": -0.0022,
+        "y": -0.0199,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.172,
+        "roll": -0.0046,
+        "yaw": 0.0179
+      },
+      "gravity": {
+        "x": -0.0046,
+        "y": -0.0195,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.178,
+        "roll": -0.0021,
+        "yaw": 0.0195
+      },
+      "gravity": {
+        "x": -0.007,
+        "y": -0.0187,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.184,
+        "roll": -0.0001,
+        "yaw": 0.0212
+      },
+      "gravity": {
+        "x": -0.0093,
+        "y": -0.0177,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.19,
+        "roll": 0.0013,
+        "yaw": 0.0228
+      },
+      "gravity": {
+        "x": -0.0114,
+        "y": -0.0164,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.196,
+        "roll": 0.0019,
+        "yaw": 0.0244
+      },
+      "gravity": {
+        "x": -0.0134,
+        "y": -0.0149,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.202,
+        "roll": 0.0019,
+        "yaw": 0.0258
+      },
+      "gravity": {
+        "x": -0.0151,
+        "y": -0.0131,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.208,
+        "roll": 0.0011,
+        "yaw": 0.0271
+      },
+      "gravity": {
+        "x": -0.0166,
+        "y": -0.0111,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.214,
+        "roll": -0.0004,
+        "yaw": 0.0282
+      },
+      "gravity": {
+        "x": -0.0179,
+        "y": -0.0089,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.22,
+        "roll": -0.0025,
+        "yaw": 0.029
+      },
+      "gravity": {
+        "x": -0.0189,
+        "y": -0.0066,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.226,
+        "roll": -0.0051,
+        "yaw": 0.0296
+      },
+      "gravity": {
+        "x": -0.0196,
+        "y": -0.0042,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.232,
+        "roll": -0.0079,
+        "yaw": 0.0299
+      },
+      "gravity": {
+        "x": -0.0199,
+        "y": -0.0017,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.238,
+        "roll": -0.0109,
+        "yaw": 0.03
+      },
+      "gravity": {
+        "x": -0.02,
+        "y": 0.0008,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.244,
+        "roll": -0.0138,
+        "yaw": 0.0298
+      },
+      "gravity": {
+        "x": -0.0197,
+        "y": 0.0032,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.25,
+        "roll": -0.0165,
+        "yaw": 0.0293
+      },
+      "gravity": {
+        "x": -0.0192,
+        "y": 0.0057,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.256,
+        "roll": -0.0188,
+        "yaw": 0.0285
+      },
+      "gravity": {
+        "x": -0.0183,
+        "y": 0.008,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.262,
+        "roll": -0.0206,
+        "yaw": 0.0275
+      },
+      "gravity": {
+        "x": -0.0172,
+        "y": 0.0102,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.268,
+        "roll": -0.0216,
+        "yaw": 0.0263
+      },
+      "gravity": {
+        "x": -0.0158,
+        "y": 0.0123,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.274,
+        "roll": -0.022,
+        "yaw": 0.025
+      },
+      "gravity": {
+        "x": -0.0141,
+        "y": 0.0142,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.28,
+        "roll": -0.0216,
+        "yaw": 0.0235
+      },
+      "gravity": {
+        "x": -0.0122,
+        "y": 0.0158,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.286,
+        "roll": -0.0205,
+        "yaw": 0.0219
+      },
+      "gravity": {
+        "x": -0.0102,
+        "y": 0.0172,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.292,
+        "roll": -0.0187,
+        "yaw": 0.0202
+      },
+      "gravity": {
+        "x": -0.0079,
+        "y": 0.0184,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.298,
+        "roll": -0.0164,
+        "yaw": 0.0185
+      },
+      "gravity": {
+        "x": -0.0056,
+        "y": 0.0192,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.304,
+        "roll": -0.0137,
+        "yaw": 0.0169
+      },
+      "gravity": {
+        "x": -0.0032,
+        "y": 0.0198,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.31,
+        "roll": -0.0108,
+        "yaw": 0.0154
+      },
+      "gravity": {
+        "x": -0.0007,
+        "y": 0.02,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.316,
+        "roll": -0.0078,
+        "yaw": 0.014
+      },
+      "gravity": {
+        "x": 0.0018,
+        "y": 0.0199,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.322,
+        "roll": -0.005,
+        "yaw": 0.0127
+      },
+      "gravity": {
+        "x": 0.0043,
+        "y": 0.0195,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.328,
+        "roll": -0.0024,
+        "yaw": 0.0117
+      },
+      "gravity": {
+        "x": 0.0067,
+        "y": 0.0188,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.334,
+        "roll": -0.0004,
+        "yaw": 0.0109
+      },
+      "gravity": {
+        "x": 0.009,
+        "y": 0.0179,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.34,
+        "roll": 0.0011,
+        "yaw": 0.0103
+      },
+      "gravity": {
+        "x": 0.0112,
+        "y": 0.0166,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.346,
+        "roll": 0.0019,
+        "yaw": 0.01
+      },
+      "gravity": {
+        "x": 0.0131,
+        "y": 0.0151,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.352,
+        "roll": 0.0019,
+        "yaw": 0.01
+      },
+      "gravity": {
+        "x": 0.0149,
+        "y": 0.0133,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.358,
+        "roll": 0.0012,
+        "yaw": 0.0103
+      },
+      "gravity": {
+        "x": 0.0165,
+        "y": 0.0114,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.364,
+        "roll": -0.0002,
+        "yaw": 0.0108
+      },
+      "gravity": {
+        "x": 0.0177,
+        "y": 0.0092,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.37,
+        "roll": -0.0022,
+        "yaw": 0.0116
+      },
+      "gravity": {
+        "x": 0.0188,
+        "y": 0.0069,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.376,
+        "roll": -0.0047,
+        "yaw": 0.0126
+      },
+      "gravity": {
+        "x": 0.0195,
+        "y": 0.0045,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.382,
+        "roll": -0.0075,
+        "yaw": 0.0139
+      },
+      "gravity": {
+        "x": 0.0199,
+        "y": 0.0021,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.388,
+        "roll": -0.0105,
+        "yaw": 0.0152
+      },
+      "gravity": {
+        "x": 0.02,
+        "y": -0.0004,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.394,
+        "roll": -0.0135,
+        "yaw": 0.0168
+      },
+      "gravity": {
+        "x": 0.0198,
+        "y": -0.0029,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.4,
+        "roll": -0.0162,
+        "yaw": 0.0184
+      },
+      "gravity": {
+        "x": 0.0193,
+        "y": -0.0054,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.406,
+        "roll": -0.0185,
+        "yaw": 0.02
+      },
+      "gravity": {
+        "x": 0.0185,
+        "y": -0.0077,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.412,
+        "roll": -0.0204,
+        "yaw": 0.0217
+      },
+      "gravity": {
+        "x": 0.0173,
+        "y": -0.01,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.418,
+        "roll": -0.0215,
+        "yaw": 0.0233
+      },
+      "gravity": {
+        "x": 0.016,
+        "y": -0.012,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.424,
+        "roll": -0.022,
+        "yaw": 0.0248
+      },
+      "gravity": {
+        "x": 0.0143,
+        "y": -0.0139,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.43,
+        "roll": -0.0217,
+        "yaw": 0.0262
+      },
+      "gravity": {
+        "x": 0.0125,
+        "y": -0.0156,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.436,
+        "roll": -0.0207,
+        "yaw": 0.0274
+      },
+      "gravity": {
+        "x": 0.0104,
+        "y": -0.0171,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.442,
+        "roll": -0.019,
+        "yaw": 0.0284
+      },
+      "gravity": {
+        "x": 0.0082,
+        "y": -0.0182,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.448,
+        "roll": -0.0168,
+        "yaw": 0.0292
+      },
+      "gravity": {
+        "x": 0.0059,
+        "y": -0.0191,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.454,
+        "roll": -0.0141,
+        "yaw": 0.0297
+      },
+      "gravity": {
+        "x": 0.0035,
+        "y": -0.0197,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.46,
+        "roll": -0.0112,
+        "yaw": 0.03
+      },
+      "gravity": {
+        "x": 0.001,
+        "y": -0.02,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.466,
+        "roll": -0.0082,
+        "yaw": 0.0299
+      },
+      "gravity": {
+        "x": -0.0015,
+        "y": -0.0199,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.472,
+        "roll": -0.0053,
+        "yaw": 0.0296
+      },
+      "gravity": {
+        "x": -0.004,
+        "y": -0.0196,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.478,
+        "roll": -0.0027,
+        "yaw": 0.0291
+      },
+      "gravity": {
+        "x": -0.0064,
+        "y": -0.019,
+        "z": -1
+      }
+    },
+    {
+      "ts": 0,
+      "source": "airpods-mock",
+      "attitude": {
+        "pitch": 0.484,
+        "roll": -0.0006,
+        "yaw": 0.0283
+      },
+      "gravity": {
+        "x": -0.0087,
+        "y": -0.018,
+        "z": -1
+      }
+    }
+  ]
+}
