@@ -2,156 +2,160 @@
 
 ## Goal
 
-Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking, then improve onboarding and brand experience.
+Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking, improve onboarding and brand experience, then polish the Motion card and session history.
 
 ## Current Status
 
-- **Simulator:** App loads and runs.
+- **Simulator:** App loads and runs (browser mock).
 - **Physical iPhone:** App installs, signs, and runs (development team + keychain configured).
-- **AirPods session:** **Working** — motion streams at 25 Hz, posture score updates (good / warning / slouch), focus timer runs, 240+ samples per session verified on device.
-- **Brand refresh:** **Implemented, pending test** — light theme, first-launch landing, posture stripe; needs Clean Build + device run after lunch.
+- **Brand refresh:** **Verified** — light theme, first-launch landing, posture stripe.
+- **AirPods session:** **Working** — connect, stream at 25 Hz, live posture score, focus timer, 240+ samples per session.
+- **Motion card:** **Working** — pitch/roll Δ readouts, auto-scaled degree chart, RAF-throttled redraws.
+- **Session history:** **Implemented** — saves summaries to `localStorage` on stop (`upright.sessions`).
+- **Connection detection:** **Fixed** — delegate + `isDeviceMotionAvailable`; Sensor card shows **Motion ready**.
 
 ---
 
-## Issues Fixed
+## Issues Fixed (This Session)
+
+### 7. Motion card showed flat / empty data
+
+**Symptom:** Chart lines appeared flat; readouts empty despite samples flowing.
+
+**Cause:** Chart plotted raw radians with a tiny multiplier; no delta-from-neutral scaling.
+
+**Fix:** Plot degrees away from calibrated neutral, auto Y-scale, live pitch/roll/window readouts, zero reference line.
+
+### 8. “Disconnected” status despite AirPods in ears
+
+**Symptom:** Sensor card showed `disconnected` while permission was `granted`; user thought app was broken.
+
+**Cause:** Connection logic misused `isConnectionStatusActive` (means “updates running”, not “buds connected”) and only checked active Bluetooth audio route.
+
+**Fix:**
+- `CMHeadphoneMotionManagerDelegate` + `startConnectionStatusUpdates()`
+- Treat `isDeviceMotionAvailable` as motion-ready signal
+- Expanded audio-route port detection
+- Added **Motion ready** row to Sensor card
+- Delayed status re-push after web load; poll until connected
+
+### 9. Permission button returned `undefined` / `unknown`
+
+**Cause:** WKWebView reply handler does not reliably return bare Swift strings to JS.
+
+**Fix:** Native returns `{ permission: "granted" }`; bridge-sdk unwraps; button disables when already granted.
+
+### 10. Boot fragility from chart errors
+
+**Cause:** `drawChart()` inside boot `try/catch` could trigger mock-bridge fallback on UI errors.
+
+**Fix:** `safeDrawChart()` / `scheduleDrawChart()`; boot only falls back on bridge failures; single boot promise.
+
+### 11. SIGABRT crash when scrolling during session
+
+**Symptom:** App froze/crashed on Thread 2 at `recentSamples.append(sample)` when scrolling to Motion card.
+
+**Cause:** CoreMotion callback on background thread raced with main-thread reads of `recentSamples` (Swift `Array` is not thread-safe).
+
+**Fix:**
+- Serial `sampleQueue` for all `recentSamples` access
+- Dispatch motion events to main thread before bridge/JS
+- Stop existing motion updates before starting a new session
+- Throttle chart redraws to one per animation frame
+
+### 12. Swift build error in `HeadphoneMotionAdapter`
+
+**Symptom:** `Cannot convert value of type '() -> Void?' to expected argument type 'DispatchWorkItem'`.
+
+**Fix:** Inlined `DispatchQueue.main.async` closure instead of passing optional-returning closure to `execute:`.
+
+---
+
+## Earlier Issues Fixed (Prior Sessions)
 
 ### 1. Xcode project would not open (`project.pbxproj` parse error)
 
-**Symptom:** “The project ‘Upright’ is damaged and cannot be opened due to a parse error.”
-
-**Cause:** `scripts/create_repo_files.py` generated invalid `project.pbxproj` syntax.
-
-**Fix:** Corrected the generator (`fmt_list`, `fmt_dict`, `file_ref`, quoting, build-settings closing braces) and regenerated `ios/Upright.xcodeproj/project.pbxproj`.
+**Fix:** Corrected `scripts/create_repo_files.py` generator and regenerated `project.pbxproj`.
 
 ### 2. Swift compile errors (11 issues)
 
-**Files:** `NativeBridge.swift`, `HeadphoneMotionAdapter.swift`, `RootViewController.swift`
-
-**Fixes:**
-- Added `import CoreMotion` and `@preconcurrency import WebKit`
-- Split `WKScriptMessageHandler` vs `WKScriptMessageHandlerWithReply` into separate extensions
-- Replaced deprecated `javaScriptEnabled` with `defaultWebpagePreferences.allowsContentJavaScript`
-- Fixed `BridgeError.Result` → Swift `Result<..., BridgeError>` in `HeadphoneMotionAdapter`
-- Removed invalid `deviceMotionUpdateInterval` on `CMHeadphoneMotionManager`; added client-side sample throttling
-- Fixed closure capture and redundant `??` on non-optional strings
+**Fixes:** CoreMotion import, WebKit preconcurrency, bridge handler split, deprecated JS prefs, sample throttling, etc.
 
 ### 3. Build failed on “Copy Web” phase
 
-**Symptom:** `rsync: ios/web/: No such file or directory`
+**Fix:** Build script uses `${SRCROOT}/../web/`.
 
-**Fix:** Updated build script and generator to use `${SRCROOT}/../web/`.
+### 4. Runtime crash on launch (JSON write)
 
-### 4. Runtime crash on launch
+**Fix:** `JSONEncoder` for event type; validate payload before dispatch.
 
-**Symptom:** `NSInvalidArgumentException` — “Invalid top-level type in JSON write”.
+### 5. WKWebView JavaScript would not boot
 
-**Fix:** Encode event type with `JSONEncoder`; validate payload with `JSONSerialization.isValidJSONObject`.
+**Fix:** Classic scripts instead of ES modules; file URL access prefs; bridge request `id`; event routing.
 
-### 5. WKWebView JavaScript would not boot (“Detecting…”, then “JS error”)
+### 6. Native bridge connected but UI stalled
 
-**Symptom:** Badge stuck on Detecting… or JS error; sensor fields empty; buttons unresponsive.
-
-**Cause:** ES module `import`/`export` does not load reliably from `file://` URLs in WKWebView.
-
-**Fix:**
-- Switched web app from ES modules to classic `<script>` tags (IIFE + `window` globals)
-- Enabled `allowFileAccessFromFileURLs` and `allowUniversalAccessFromFileURLs` on `WKWebViewConfiguration`
-- Added bridge request `id` field required by `BridgeRequest`
-- Fixed `__dispatchNativeEvent` routing to the active bridge instance
-
-### 6. Native bridge connected but UI/actions stalled
-
-**Symptom:** Events log showed `Native bridge ready` and `Status: connected / unknown`, but Sensor card showed dashes and Start Session did nothing.
-
-**Fixes:**
-- Replaced invalid `<dl>`/`<div>` sensor markup with plain `status-row` spans so values render correctly
-- Deliver all `WKScriptMessageHandlerWithReply` callbacks on the main thread
-- Omit `NSNull` keys from status dictionary (cleaner JS interop)
-- Cache `lastStatus` from push events; add timeouts and logging to `startSession` / `requestPermission`
-- Register bridge event listeners before `ready()` so early status pushes are not missed
+**Fix:** Sensor markup, main-thread replies, status cache, listener timing, timeouts.
 
 ---
 
-## Brand Refresh (2026-06-22 — uncommitted)
-
-Inspired by a light editorial comp (Polaroid INSTANT style). User decisions:
+## Brand Refresh (Verified on iPhone)
 
 | Decision | Choice |
 |----------|--------|
 | Theme | Light only |
 | Scope | First-launch landing + reskin existing app |
-| Accent | Posture rainbow (good / warning / slouch), not full spectrum |
+| Accent | Posture rainbow (good / warning / slouch) |
 | Typography | System fonts (SF Pro) |
 | Landing | First launch only via `localStorage` (`upright.landingSeen`) |
 | CTA | Black primary buttons |
 | Tagline | **Stay stacked. Stay focused.** |
 
-### What was built
+---
 
-- **Landing screen:** Upright wordmark, tagline, AirPods silhouette SVG, short copy, black **Get started** button
-- **Light app theme:** White cards, soft gray background, posture stripe on landing and main app
-- **Posture colors on light:** good = teal (`#0d9488`), warning = amber (`#d97706`), slouch = coral (`#e11d48`)
-- **Motion chart** colors updated for light backgrounds
-- **iOS shell:** `RootViewController` background set to light gray to avoid black flash behind WKWebView
-- **README:** Expanded iPhone/AirPods testing instructions (clean build, signing, troubleshooting)
+## Motion & History Features
 
-### To test after lunch
+### Motion card
+- Pitch Δ / Roll Δ / Window readouts
+- Canvas chart: last ~90 samples, degrees from neutral, auto-scale, dashed 0° line
+- Sample count in header
 
-1. **Product → Clean Build Folder** (⇧⌘K)
-2. Run on iPhone
-3. Confirm first-launch landing appears, then **Get started** enters the app
-4. Confirm light theme, posture stripe, and AirPods session still work
-5. **Re-show landing:** delete/reinstall app, or `localStorage.removeItem('upright.landingSeen')` in browser mock
+### Session history (`web/session-store.js`)
+- Saves on **Stop** when ≥ 5 samples
+- Stores: when, duration, avg score, good/slouch %, color bar
+- Up to 40 sessions in `localStorage` (`upright.sessions`)
+- **History** card with Clear button
 
 ---
 
-## Device Deployment (Manual Steps Completed)
+## AirPods Test Results (Latest — Verified on iPhone)
 
-1. Paired iPhone with Mac in Xcode.
-2. Set **Signing & Capabilities** → **Team** under **TARGETS → Upright**.
-3. Resolved keychain prompt with **Mac login password** (not Apple ID); used **Always Allow**.
-
----
-
-## AirPods Test Results (Verified on iPhone)
-
-1. Request Permission → iOS motion prompt → **granted**
-2. Start Session → **25 Hz**, **240 samples**, focus timer active
-3. Posture score responded to head movement: **72 (slouch)** → **48 (warning)** → **6 (good)**
-4. Calibrate Neutral available for baseline tuning
+1. **Motion ready:** yes with AirPods in ears
+2. **Start Session** → 25 Hz, 240 samples, timer running
+3. **Live chart** — pitch/roll Δ updating (e.g. +2.3° / +4.3°)
+4. **Scroll to Motion card** — no crash after thread-safety fix
+5. Posture score responds to head movement (good / warning / slouch)
 
 ---
 
-## Files Changed
-
-### Committed (pushed to `origin/master`)
+## Files Changed (Pending Commit)
 
 | Area | Files |
 |------|--------|
-| iOS project | `ios/Upright.xcodeproj/project.pbxproj` |
-| Native shell | `NativeBridge.swift`, `HeadphoneMotionAdapter.swift`, `RootViewController.swift` |
-| Web app | `web/app.js`, `bridge-sdk.js`, `index.html`, `mock-bridge.js`, `posture-core.js`, `styles.css` |
-| Generator | `scripts/create_repo_files.py` |
+| Native shell | `HeadphoneMotionAdapter.swift`, `NativeBridge.swift`, `RootViewController.swift` |
+| Web app | `app.js`, `bridge-sdk.js`, `index.html`, `styles.css`, `session-store.js` (new) |
+| Tooling | `package.json` (check script) |
 | Docs | `SESSION_SUMMARY.md` |
-
-### Uncommitted (local)
-
-| Area | Files |
-|------|--------|
-| Brand / web | `web/styles.css`, `web/index.html`, `web/app.js` |
-| Native shell | `ios/Upright/RootViewController.swift` (light background) |
-| Docs | `README.md`, `SESSION_SUMMARY.md` |
 
 ---
 
 ## Next Steps
 
-- **Test brand refresh** on device after lunch (landing + light theme + AirPods flow)
-- Clarify **Motion** card, **Haptic**, **Speak**, and **Reset** controls in the UI
-- Tune posture thresholds (`posture-core.js`) for sensitivity
+- Clarify **Haptic**, **Speak**, and **Reset** controls in the UI
+- Tune posture thresholds (`posture-core.js`)
 - Haptic/speech alerts on sustained slouch
-- Persist session history locally
-- Commit brand refresh when satisfied with on-device test
+- Tap history row to expand session detail
+- Sync `scripts/create_repo_files.py` with manual web/native edits
 
 ---
 
@@ -161,4 +165,5 @@ Inspired by a light editorial comp (Polaroid INSTANT style). User decisions:
 - Motion usage: `NSMotionUsageDescription` in `ios/Upright/Info.plist`
 - Bridge contract: `docs/bridge-contract.md`
 - Test plan: `docs/iphone-test-plan.md`
-- Landing storage key: `upright.landingSeen`
+- Storage keys: `upright.landingSeen`, `upright.sessions`
+- **Always Clean Build Folder** (⇧⌘K) after web changes before device run

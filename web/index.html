@@ -59,6 +59,7 @@
           <div class="status-row"><span class="status-label">Mode</span><span id="modeValue" class="status-value">—</span></div>
           <div class="status-row"><span class="status-label">Permission</span><span id="permissionValue" class="status-value">—</span></div>
           <div class="status-row"><span class="status-label">Connection</span><span id="connectionValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Motion ready</span><span id="motionReadyValue" class="status-value">—</span></div>
           <div class="status-row"><span class="status-label">Device</span><span id="deviceValue" class="status-value">—</span></div>
           <div class="status-row"><span class="status-label">Rate</span><span id="rateValue" class="status-value">—</span></div>
         </div>
@@ -102,7 +103,31 @@
           <h2>Motion</h2>
           <span id="sampleCount" class="muted">0 samples</span>
         </div>
-        <canvas id="motionChart" width="900" height="260" aria-label="Pitch and roll chart"></canvas>
+        <div class="motion-readouts">
+          <div class="motion-readout">
+            <span class="motion-readout-label pitch-label">Pitch Δ</span>
+            <strong id="motionPitch" class="motion-readout-value">—</strong>
+          </div>
+          <div class="motion-readout">
+            <span class="motion-readout-label roll-label">Roll Δ</span>
+            <strong id="motionRoll" class="motion-readout-value">—</strong>
+          </div>
+          <div class="motion-readout">
+            <span class="motion-readout-label">Window</span>
+            <strong id="motionWindow" class="motion-readout-value">—</strong>
+          </div>
+        </div>
+        <canvas id="motionChart" width="900" height="260" aria-label="Pitch and roll chart relative to neutral"></canvas>
+        <p id="motionCaption" class="motion-caption muted">Chart shows degrees away from your calibrated neutral.</p>
+      </article>
+
+      <article class="card history-card">
+        <div class="section-title">
+          <h2>History</h2>
+          <button id="clearHistoryBtn" class="ghost small" type="button">Clear</button>
+        </div>
+        <p id="historyEmpty" class="history-empty muted">Completed sessions appear here.</p>
+        <ul id="sessionHistory" class="session-history"></ul>
       </article>
 
       <article class="card log-card">
@@ -129,6 +154,7 @@
     });
   </script>
   <script src="./posture-core.js"></script>
+  <script src="./session-store.js"></script>
   <script src="./bridge-sdk.js"></script>
   <script src="./mock-bridge.js"></script>
   <script src="./app.js"></script>

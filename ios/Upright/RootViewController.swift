@@ -64,5 +64,8 @@ final class RootViewController: UIViewController, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         bridge.pushInitialStatus()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            self?.bridge.pushInitialStatus()
+        }
     }
 }

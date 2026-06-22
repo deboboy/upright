@@ -13,6 +13,9 @@ final class NativeBridge: NSObject {
     init(adapter: HeadphoneMotionAdapter) {
         self.adapter = adapter
         super.init()
+        adapter.onConnectionChange = { [weak self] in
+            self?.dispatchStatus()
+        }
         installObservers()
     }
 
@@ -80,7 +83,8 @@ final class NativeBridge: NSObject {
                 return
             }
             self.dispatchStatus()
-            self.deliverReply(self.permissionString(for: status), error: nil, to: replyHandler)
+            let permission = self.permissionString(for: status)
+            self.deliverReply(["permission": permission], error: nil, to: replyHandler)
         }
     }
 
@@ -103,6 +107,7 @@ final class NativeBridge: NSObject {
     }
 
     private func statusDictionary() -> [String: Any] {
+        adapter.refreshConnectionEstimate()
         var status: [String: Any] = [
             "platform": "ios-native-shell",
             "apiVersion": "1",
@@ -188,30 +193,17 @@ final class NativeBridge: NSObject {
     }
 
     private func connectionState() -> String {
-        let hasBluetoothOutput = AVAudioSession.sharedInstance().currentRoute.outputs.contains { output in
-            output.portType == .bluetoothA2DP || output.portType == .bluetoothLE
+        if active && adapter.isDeviceMotionActive {
+            return "active"
         }
-        if active && adapter.isDeviceMotionActive && (hasBluetoothOutput || managerIsConnectionActive()) { return "active" }
-        if hasBluetoothOutput || managerIsConnectionActive() { return "connected" }
+        if adapter.isHeadphonesConnected {
+            return "connected"
+        }
         return "disconnected"
     }
 
-    private func managerIsConnectionActive() -> Bool {
-        if #available(iOS 15.0, *) {
-            return adapter.isConnectionStatusActive
-        }
-        return false
-    }
-
     private func deviceName() -> String? {
-        let outputs = AVAudioSession.sharedInstance().currentRoute.outputs
-        if let airPods = outputs.first(where: { $0.portName.lowercased().contains("airpods") }) {
-            return airPods.portName
-        }
-        if let bluetooth = outputs.first(where: { $0.portType == .bluetoothA2DP || $0.portType == .bluetoothLE }) {
-            return bluetooth.portName.isEmpty ? bluetooth.portType.rawValue : bluetooth.portName
-        }
-        return nil
+        adapter.connectedDeviceName
     }
 
     private func haptic(_ params: [String: Any]) {

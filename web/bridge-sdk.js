@@ -6,6 +6,15 @@
     return handlers?.nativeBridgeWithReply || handlers?.nativeBridge || null;
   }
 
+  function unwrapReply(result, method) {
+    if (result == null) return result;
+    if (method === 'requestPermission') {
+      if (typeof result === 'string') return result;
+      if (typeof result === 'object' && result.permission) return result.permission;
+    }
+    return result;
+  }
+
   class UprightBridge {
     constructor() {
       this.listeners = new Map();
@@ -31,9 +40,9 @@
         params,
       });
       if (result && typeof result.then === 'function') {
-        return result;
+        return result.then((value) => unwrapReply(value, method));
       }
-      return result;
+      return unwrapReply(result, method);
     }
 
     async ready() {
