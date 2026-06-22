@@ -1,5 +1,5 @@
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 final class RootViewController: UIViewController, WKNavigationDelegate {
     private let adapter = HeadphoneMotionAdapter()
@@ -21,6 +21,8 @@ final class RootViewController: UIViewController, WKNavigationDelegate {
 
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
+        configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+        configuration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         bridge.install(in: configuration)
 
         webView = WKWebView(frame: view.bounds, configuration: configuration)
@@ -58,5 +60,9 @@ final class RootViewController: UIViewController, WKNavigationDelegate {
             UIApplication.shared.open(url)
             decisionHandler(.cancel)
         }
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        bridge.pushInitialStatus()
     }
 }

@@ -26,14 +26,15 @@ def id_for(label):
 
 def fmt_list(items, indent="    "):
     if not items:
-        return "(\n        );"
+        return f"(\n{indent})"
     rendered = ",\n".join(f"{indent}{item}" for item in items)
-    return f"(\n{rendered},\n{indent[:-4]});"
+    return f"(\n{rendered},\n{indent})"
 
 
-def fmt_dict(items, indent="    "):
-    rendered = ";\n".join(f"{indent}{k} = {v}" for k, v in items.items())
-    return f"{{\n{rendered};\n{indent[:-4]}}}"
+def fmt_dict(items, indent="\t\t\t\t"):
+    close_indent = indent[:-1] if indent else ""
+    lines = [f"{indent}{k} = {v};" for k, v in items.items() if v != ""]
+    return "{\n" + "\n".join(lines) + f"\n{close_indent}}};"
 
 
 def png_icon(path, size=1024):
@@ -120,9 +121,10 @@ def pbxproj():
         "Assets.xcassets": gid("Assets.xcassets in Resources"),
     }
 
-    def file_ref(label, path, filetype, tree="<group>", name=None):
-        name_part = f"; name = {name};" if name else ""
-        return f"{label} /* {path} */ = {{isa = PBXFileReference; lastKnownFileType = {filetype}; path = {path}; sourceTree = {tree};{name_part} }};"
+    def file_ref(ref_id, path, filetype, tree="<group>", name=None):
+        tree_value = '"<group>"' if tree == "<group>" else tree
+        name_part = f" name = {name};" if name else ""
+        return f"\t\t{ref_id} /* {path} */ = {{isa = PBXFileReference; lastKnownFileType = {filetype}; path = {path}; sourceTree = {tree_value};{name_part} }};"
 
     lines = []
     add = lines.append
@@ -145,22 +147,22 @@ def pbxproj():
 
     add("\t\t/* Begin PBXFileReference section */")
     for f in source_files:
-        add(file_ref(f"{source_ref[f]} /* {f} */", f, "sourcecode.swift"))
+        add(file_ref(source_ref[f], f, "sourcecode.swift"))
     for f in web_files:
-        add(file_ref(f"{web_ref[f]} /* {f} */", f, "text" if f.endswith((".html", ".js", ".json", ".css")) else "unknown", name=f))
+        add(file_ref(web_ref[f], f, "text" if f.endswith((".html", ".js", ".json", ".css")) else "unknown", name=f))
     for f in frameworks:
-        add(file_ref(f"{framework_ref[f]} /* {f} */", f"System/Library/Frameworks/{f}", "wrapper.framework", tree="SDKROOT", name=f))
-    add(file_ref(f"{product_ref} /* Upright.app */", "Upright.app", "wrapper.application", tree="BUILT_PRODUCTS_DIR"))
-    add(file_ref(f"{resource_refs['Info.plist']} /* Info.plist */", "Info.plist", "text.plist.xml"))
-    add(file_ref(f"{resource_refs['LaunchScreen.storyboard']} /* LaunchScreen.storyboard */", "LaunchScreen.storyboard", "file.storyboard"))
-    add(file_ref(f"{resource_refs['Assets.xcassets']} /* Assets.xcassets */", "Assets.xcassets", "folder.assetcatalog"))
+        add(file_ref(framework_ref[f], f"System/Library/Frameworks/{f}", "wrapper.framework", tree="SDKROOT", name=f))
+    add(file_ref(product_ref, "Upright.app", "wrapper.application", tree="BUILT_PRODUCTS_DIR"))
+    add(file_ref(resource_refs["Info.plist"], "Info.plist", "text.plist.xml"))
+    add(file_ref(resource_refs["LaunchScreen.storyboard"], "LaunchScreen.storyboard", "file.storyboard"))
+    add(file_ref(resource_refs["Assets.xcassets"], "Assets.xcassets", "folder.assetcatalog"))
     add("\t\t/* End PBXFileReference section */")
 
     add("\t\t/* Begin PBXFrameworksBuildPhase section */")
     add(f"\t\t{frameworks_phase} /* Frameworks */ = {{")
     add("\t\t\tisa = PBXFrameworksBuildPhase;")
     add("\t\t\tbuildActionMask = 2147483647;")
-    add("\t\t\tfiles = " + fmt_list([f"{framework_build[f]} /* {f} in Frameworks */" for f in frameworks]))
+    add("\t\t\tfiles = " + fmt_list([f"{framework_build[f]} /* {f} in Frameworks */" for f in frameworks]) + ";")
     add("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
     add("\t\t};")
     add("\t\t/* End PBXFrameworksBuildPhase section */")
@@ -168,24 +170,24 @@ def pbxproj():
     add("\t\t/* Begin PBXGroup section */")
     add(f"\t\t{main_group} /* Project */ = {{")
     add("\t\t\tisa = PBXGroup;")
-    add("\t\t\tchildren = " + fmt_list([f"{app_group} /* Upright */", f"{products_group} /* Products */"]))
+    add("\t\t\tchildren = " + fmt_list([f"{app_group} /* Upright */", f"{products_group} /* Products */"]) + ";")
     add("\t\t\tsourceTree = \"<group>\";")
     add("\t\t};")
     add(f"\t\t{app_group} /* Upright */ = {{")
     add("\t\t\tisa = PBXGroup;")
-    add("\t\t\tchildren = " + fmt_list([f"{source_ref[f]} /* {f} */" for f in source_files] + [f"{resource_refs['Info.plist']} /* Info.plist */", f"{resource_refs['LaunchScreen.storyboard']} /* LaunchScreen.storyboard */", f"{resource_refs['Assets.xcassets']} /* Assets.xcassets */", f"{web_group} /* Web */"]))
+    add("\t\t\tchildren = " + fmt_list([f"{source_ref[f]} /* {f} */" for f in source_files] + [f"{resource_refs['Info.plist']} /* Info.plist */", f"{resource_refs['LaunchScreen.storyboard']} /* LaunchScreen.storyboard */", f"{resource_refs['Assets.xcassets']} /* Assets.xcassets */", f"{web_group} /* Web */"]) + ";")
     add("\t\t\tpath = Upright;")
     add("\t\t\tsourceTree = \"<group>\";")
     add("\t\t};")
     add(f"\t\t{web_group} /* Web */ = {{")
     add("\t\t\tisa = PBXGroup;")
-    add("\t\t\tchildren = " + fmt_list([f"{web_ref[f]} /* {f} */" for f in web_files]))
+    add("\t\t\tchildren = " + fmt_list([f"{web_ref[f]} /* {f} */" for f in web_files]) + ";")
     add("\t\t\tpath = web;")
     add("\t\t\tsourceTree = \"<group>\";")
     add("\t\t};")
     add(f"\t\t{products_group} /* Products */ = {{")
     add("\t\t\tisa = PBXGroup;")
-    add("\t\t\tchildren = " + fmt_list([f"{product_ref} /* Upright.app */"]))
+    add("\t\t\tchildren = " + fmt_list([f"{product_ref} /* Upright.app */"]) + ";")
     add("\t\t\tname = Products;")
     add("\t\t\tsourceTree = \"<group>\";")
     add("\t\t};")
@@ -195,9 +197,9 @@ def pbxproj():
     add(f"\t\t{target} /* Upright */ = {{")
     add("\t\t\tisa = PBXNativeTarget;")
     add(f"\t\t\tbuildConfigurationList = {target_configs} /* Build configuration list for PBXNativeTarget \"Upright\" */;")
-    add("\t\t\tbuildPhases = " + fmt_list([f"{sources_phase} /* Sources */", f"{frameworks_phase} /* Frameworks */", f"{resources_phase} /* Resources */", f"{shell_phase} /* Copy Web */"]))
-    add("\t\t\tbuildRules = " + fmt_list([]))
-    add("\t\t\tdependencies = " + fmt_list([]))
+    add("\t\t\tbuildPhases = " + fmt_list([f"{sources_phase} /* Sources */", f"{frameworks_phase} /* Frameworks */", f"{resources_phase} /* Resources */", f"{shell_phase} /* Copy Web */"]) + ";")
+    add("\t\t\tbuildRules = " + fmt_list([]) + ";")
+    add("\t\t\tdependencies = " + fmt_list([]) + ";")
     add("\t\t\tname = Upright;")
     add("\t\t\tproductName = Upright;")
     add(f"\t\t\tproductReference = {product_ref} /* Upright.app */;")
@@ -222,12 +224,12 @@ def pbxproj():
     add("\t\t\tcompatibilityVersion = \"Xcode 14.0\";")
     add("\t\t\tdevelopmentRegion = en;")
     add("\t\t\thasScannedForEncodings = 0;")
-    add("\t\t\tknownRegions = " + fmt_list(["en", "Base"]))
+    add("\t\t\tknownRegions = " + fmt_list(["en", "Base"]) + ";")
     add(f"\t\t\tmainGroup = {main_group} /* Project */;")
     add(f"\t\t\tproductRefGroup = {products_group} /* Products */;")
     add("\t\t\tprojectDirPath = \"\";")
     add("\t\t\tprojectRoot = \"\";")
-    add("\t\t\ttargets = " + fmt_list([f"{target} /* Upright */"]))
+    add("\t\t\ttargets = " + fmt_list([f"{target} /* Upright */"]) + ";")
     add("\t\t};")
     add("\t\t/* End PBXProject section */")
 
@@ -235,7 +237,7 @@ def pbxproj():
     add(f"\t\t{resources_phase} /* Resources */ = {{")
     add("\t\t\tisa = PBXResourcesBuildPhase;")
     add("\t\t\tbuildActionMask = 2147483647;")
-    add("\t\t\tfiles = " + fmt_list([f"{resource_build['LaunchScreen.storyboard']} /* LaunchScreen.storyboard in Resources */", f"{resource_build['Assets.xcassets']} /* Assets.xcassets in Resources */"]))
+    add("\t\t\tfiles = " + fmt_list([f"{resource_build['LaunchScreen.storyboard']} /* LaunchScreen.storyboard in Resources */", f"{resource_build['Assets.xcassets']} /* Assets.xcassets in Resources */"]) + ";")
     add("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
     add("\t\t};")
     add("\t\t/* End PBXResourcesBuildPhase section */")
@@ -244,12 +246,12 @@ def pbxproj():
     add(f"\t\t{shell_phase} /* Copy Web */ = {{")
     add("\t\t\tisa = PBXShellScriptBuildPhase;")
     add("\t\t\tbuildActionMask = 2147483647;")
-    add("\t\t\tfiles = " + fmt_list([]))
-    add("\t\t\tinputPaths = " + fmt_list(["${SRCROOT}/web/"]))
-    add("\t\t\toutputPaths = " + fmt_list(["${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web/"]))
+    add("\t\t\tfiles = " + fmt_list([]) + ";")
+    add("\t\t\tinputPaths = " + fmt_list(['"${SRCROOT}/../web/"']) + ";")
+    add("\t\t\toutputPaths = " + fmt_list(['"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web/"']) + ";")
     add("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
     add("\t\t\tshellPath = /bin/sh;")
-    add('\t\t\tshellScript = "set -e\\nmkdir -p \\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web\\"\\nrsync -a --delete \\"${SRCROOT}/web/\\" \\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web/\\"\\n";')
+    add('\t\t\tshellScript = "set -e\\nmkdir -p \\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web\\"\\nrsync -a --delete \\"${SRCROOT}/../web/\\" \\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/web/\\"\\n";')
     add("\t\t\tshowEnvVarsInLog = 0;")
     add("\t\t};")
     add("\t\t/* End PBXShellScriptBuildPhase section */")
@@ -258,7 +260,7 @@ def pbxproj():
     add(f"\t\t{sources_phase} /* Sources */ = {{")
     add("\t\t\tisa = PBXSourcesBuildPhase;")
     add("\t\t\tbuildActionMask = 2147483647;")
-    add("\t\t\tfiles = " + fmt_list([f"{source_build[f]} /* {f} in Sources */" for f in source_files]))
+    add("\t\t\tfiles = " + fmt_list([f"{source_build[f]} /* {f} in Sources */" for f in source_files]) + ";")
     add("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
     add("\t\t};")
     add("\t\t/* End PBXSourcesBuildPhase section */")
@@ -273,14 +275,14 @@ def pbxproj():
             "CURRENT_PROJECT_VERSION": "1",
             "DEVELOPMENT_TEAM": '""',
             "ENABLE_PREVIEWS": "YES",
-            "INFOPLIST_FILE": "Upright/Info.plist",
+            "INFOPLIST_FILE": '"Upright/Info.plist"',
             "IPHONEOS_DEPLOYMENT_TARGET": "14.0",
             "LD_RUNPATH_SEARCH_PATHS": fmt_list(['"$(inherited)"', '"@executable_path/Frameworks"'], indent="\t\t\t\t"),
             "MARKETING_VERSION": "1.0",
-            "PRODUCT_BUNDLE_IDENTIFIER": "com.lastmyle.upright",
+            "PRODUCT_BUNDLE_IDENTIFIER": '"com.lastmyle.upright"',
             "PRODUCT_NAME": '"$(TARGET_NAME)"',
             "SDKROOT": "iphoneos",
-            "SUPPORTED_PLATFORMS": "iphoneos iphonesimulator",
+            "SUPPORTED_PLATFORMS": '"iphoneos iphonesimulator"',
             "SWIFT_VERSION": "5.0",
             "TARGETED_DEVICE_FAMILY": '"1,2"',
             "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES": "YES",
@@ -306,7 +308,6 @@ def pbxproj():
                 "GCC_PREPROCESSOR_DEFINITIONS": fmt_list(['"$(inherited)"'], indent="\t\t\t\t"),
                 "MTL_ENABLE_DEBUG_INFO": "NO",
                 "ONLY_ACTIVE_ARCH": "NO",
-                "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "",
                 "SWIFT_OPTIMIZATION_LEVEL": '"-O"',
             })
         add(f"\t\t{label} /* {name} */ = {{")
@@ -325,13 +326,13 @@ def pbxproj():
     add("\t\t/* Begin XCConfigurationList section */")
     add(f"\t\t{target_configs} /* Build configuration list for PBXNativeTarget \"Upright\" */ = {{")
     add("\t\t\tisa = XCConfigurationList;")
-    add("\t\t\tbuildConfigurations = " + fmt_list([f"{target_debug} /* Debug */", f"{target_release} /* Release */"]))
+    add("\t\t\tbuildConfigurations = " + fmt_list([f"{target_debug} /* Debug */", f"{target_release} /* Release */"]) + ";")
     add("\t\t\tdefaultConfigurationIsVisible = 0;")
     add("\t\t\tdefaultConfigurationName = Release;")
     add("\t\t};")
     add(f"\t\t{project_configs} /* Build configuration list for PBXProject \"Project\" */ = {{")
     add("\t\t\tisa = XCConfigurationList;")
-    add("\t\t\tbuildConfigurations = " + fmt_list([f"{project_debug} /* Debug */", f"{project_release} /* Release */"]))
+    add("\t\t\tbuildConfigurations = " + fmt_list([f"{project_debug} /* Debug */", f"{project_release} /* Release */"]) + ";")
     add("\t\t\tdefaultConfigurationIsVisible = 0;")
     add("\t\t\tdefaultConfigurationName = Release;")
     add("\t\t};")
@@ -849,7 +850,9 @@ write("web/bridge-sdk.js", r'''
 const handlers = window.webkit?.messageHandlers;
 const nativeHandler = handlers?.nativeBridgeWithReply || handlers?.nativeBridge;
 
-class UprightNativeBridge {
+let requestId = 0;
+
+export class UprightBridge {
   constructor() {
     this.listeners = new Map();
     this.nativeHandler = nativeHandler || null;
@@ -863,7 +866,12 @@ class UprightNativeBridge {
     if (!this.nativeHandler) {
       throw new Error('Native bridge unavailable; running in browser mock mode.');
     }
-    return this.nativeHandler.postMessage({ module, method, params });
+    return this.nativeHandler.postMessage({
+      id: `req_${++requestId}`,
+      module,
+      method,
+      params,
+    });
   }
 
   async ready() {
@@ -901,7 +909,7 @@ class UprightNativeBridge {
   }
 }
 
-const bridge = new UprightNativeBridge();
+const bridge = new UprightBridge();
 window.UprightBridge = bridge;
 window.__nativeBridge = bridge;
 window.__dispatchNativeEvent = (event, payload) => bridge._emit(event, payload);
@@ -1865,7 +1873,7 @@ final class NativeBridge: NSObject {
             "permission": permissionString(for: adapter.authorizationStatus),
             "connection": connectionState(),
             "deviceMotionAvailable": adapter.isDeviceMotionAvailable,
-            "deviceName": deviceName(),
+            "deviceName": deviceName() ?? NSNull(),
             "sampleRateHz": adapter.sampleRateHz ?? NSNull()
         ]
     }
@@ -1875,13 +1883,24 @@ final class NativeBridge: NSObject {
     }
 
     private func dispatch(_ event: BridgeEvent) {
-        guard let typeJSON = try? JSONSerialization.data(withJSONObject: event.type),
-              let typeString = String(data: typeJSON, encoding: .utf8),
-              let payloadJSON = try? JSONSerialization.data(withJSONObject: event.payload),
-              let payloadString = String(data: payloadJSON, encoding: .utf8) else {
+        guard let typeString = jsonStringLiteral(event.type),
+              let payloadString = jsonObjectLiteral(event.payload) else {
             return
         }
         webView?.evaluateJavaScript("window.__dispatchNativeEvent(\(typeString), \(payloadString))", completionHandler: nil)
+    }
+
+    private func jsonStringLiteral(_ string: String) -> String? {
+        guard let data = try? JSONEncoder().encode(string) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private func jsonObjectLiteral(_ object: Any) -> String? {
+        guard JSONSerialization.isValidJSONObject(object),
+              let data = try? JSONSerialization.data(withJSONObject: object) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
     }
 
     private func reply(_ value: Any?, _ replyHandler: @escaping (Any?, String?) -> Void) {

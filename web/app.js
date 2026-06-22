@@ -1,6 +1,4 @@
-import { PostureEngine, radiansToDegrees } from './posture-core.js';
-import { UprightBridge } from './bridge-sdk.js';
-import { createMockBridge } from './mock-bridge.js';
+const { PostureEngine, radiansToDegrees } = window.UprightPosture;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -23,6 +21,7 @@ const els = {
 
 const engine = new PostureEngine();
 let bridge = null;
+let lastStatus = null;
 let sessionActive = false;
 let timerRemaining = 25 * 60;
 let timerId = null;
@@ -36,11 +35,22 @@ function log(message) {
 }
 
 function setStatus(status) {
-  els.modeValue.textContent = status?.platform || '—';
-  els.permissionValue.textContent = status?.permission || '—';
-  els.connectionValue.textContent = status?.connection || '—';
-  els.deviceValue.textContent = status?.deviceName || '—';
-  els.rateValue.textContent = status?.sampleRateHz ? `${status.sampleRateHz} Hz` : '—';
+  if (!status || typeof status !== 'object') return;
+  lastStatus = status;
+  els.modeValue.textContent = status.platform || '—';
+  els.permissionValue.textContent = status.permission || '—';
+  els.connectionValue.textContent = status.connection || '—';
+  els.deviceValue.textContent = status.deviceName || '—';
+  els.rateValue.textContent = status.sampleRateHz ? `${status.sampleRateHz} Hz` : '—';
+}
+
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms / 1000}s`)), ms);
+    }),
+  ]);
 }
 
 function setPosture(result) {
@@ -132,21 +142,31 @@ function stopTimer() {
 
 async function startSession() {
   if (!bridge) return;
-  const status = await bridge.headphones.getStatus();
-  setStatus(status);
-  if (status.permission !== 'granted') {
-    await bridge.headphones.requestPermission();
+  log('Starting session…');
+  try {
+    let status = lastStatus;
+    if (!status) {
+      status = await withTimeout(bridge.headphones.getStatus(), 5000, 'getStatus');
+      setStatus(status);
+    }
+    if (status.permission !== 'granted') {
+      log('Requesting motion permission…');
+      const permission = await withTimeout(bridge.headphones.requestPermission(), 10000, 'requestPermission');
+      log(`Permission result: ${permission}`);
+    }
+    await withTimeout(bridge.headphones.startUpdates({ sampleRateHz: 25 }), 5000, 'startUpdates');
+    sessionActive = true;
+    $('#startBtn').disabled = true;
+    $('#stopBtn').disabled = false;
+    $('#permissionBtn').disabled = true;
+    $('#calibrateBtn').disabled = false;
+    timerRemaining = 25 * 60;
+    updateTimerLabel();
+    startTimer();
+    log('Session started.');
+  } catch (error) {
+    log(`Start failed: ${error.message}`);
   }
-  await bridge.headphones.startUpdates({ sampleRateHz: 25 });
-  sessionActive = true;
-  $('#startBtn').disabled = true;
-  $('#stopBtn').disabled = false;
-  $('#permissionBtn').disabled = true;
-  $('#calibrateBtn').disabled = false;
-  timerRemaining = 25 * 60;
-  updateTimerLabel();
-  startTimer();
-  log('Session started.');
 }
 
 async function stopSession() {
@@ -163,11 +183,22 @@ async function stopSession() {
 async function refreshStatus() {
   if (!bridge) return;
   try {
-    const status = await bridge.headphones.getStatus();
+    const status = await withTimeout(bridge.headphones.getStatus(), 5000, 'getStatus');
     setStatus(status);
   } catch (error) {
+    if (lastStatus) setStatus(lastStatus);
     log(`Status failed: ${error.message}`);
   }
+}
+
+function attachBridgeListeners() {
+  bridge.on('motion', handleMotion);
+  bridge.on('status', (status) => {
+    setStatus(status);
+    log(`Status: ${status.connection} / ${status.permission}`);
+  });
+  bridge.on('interruption', (payload) => log(`Interruption: ${payload.reason}`));
+  bridge.on('error', (payload) => log(`Error: ${payload.code} — ${payload.message}`));
 }
 
 async function handleMotion(sample) {
@@ -192,39 +223,53 @@ async function calibrate() {
 
 async function boot() {
   try {
-    bridge = new UprightBridge();
-    await bridge.ready();
+    bridge = new window.UprightBridge();
+    window.__uprightBridgeInstance = bridge;
+    attachBridgeListeners();
+    const readyPromise = bridge.ready();
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Native bridge timed out after 5s')), 5000);
+    });
+    await Promise.race([readyPromise, timeoutPromise]);
     if (!bridge.isNative) {
-      bridge = await createMockBridge();
+      bridge = await window.createMockBridge();
+      window.__uprightBridgeInstance = bridge;
+      attachBridgeListeners();
     }
     els.modeBadge.textContent = bridge.isNative ? 'Native shell' : 'Browser mock';
     els.modeBadge.classList.toggle('mock', !bridge.isNative);
-    bridge.on('motion', handleMotion);
-    bridge.on('status', (status) => {
-      setStatus(status);
-      log(`Status: ${status.connection} / ${status.permission}`);
-    });
-    bridge.on('interruption', (payload) => log(`Interruption: ${payload.reason}`));
-    bridge.on('error', (payload) => log(`Error: ${payload.code} — ${payload.message}`));
     await refreshStatus();
     drawChart();
     log(bridge.isNative ? 'Native bridge ready.' : 'Mock bridge ready.');
   } catch (error) {
+    els.modeBadge.textContent = 'Boot failed';
+    els.modeBadge.classList.add('mock');
     log(`Boot failed: ${error.message}`);
-    bridge = await createMockBridge();
-    els.modeBadge.textContent = 'Browser mock';
-    bridge.on('motion', handleMotion);
-    bridge.on('status', setStatus);
-    await refreshStatus();
+    try {
+      bridge = await window.createMockBridge();
+      window.__uprightBridgeInstance = bridge;
+      attachBridgeListeners();
+      els.modeBadge.textContent = 'Browser mock';
+      await refreshStatus();
+      drawChart();
+      log('Fell back to mock bridge.');
+    } catch (fallbackError) {
+      log(`Fallback failed: ${fallbackError.message}`);
+    }
   }
 }
 
 $('#startBtn').addEventListener('click', startSession);
 $('#stopBtn').addEventListener('click', stopSession);
 $('#permissionBtn').addEventListener('click', async () => {
-  const permission = await bridge.headphones.requestPermission();
-  log(`Permission result: ${permission}`);
-  await refreshStatus();
+  try {
+    log('Requesting motion permission…');
+    const permission = await withTimeout(bridge.headphones.requestPermission(), 10000, 'requestPermission');
+    log(`Permission result: ${permission}`);
+    await refreshStatus();
+  } catch (error) {
+    log(`Permission failed: ${error.message}`);
+  }
 });
 $('#calibrateBtn').addEventListener('click', calibrate);
 $('#settingsBtn').addEventListener('click', () => bridge.app.openSettings());

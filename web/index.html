@@ -23,13 +23,13 @@
           <h2>Sensor</h2>
           <button id="settingsBtn" class="ghost" type="button">Settings</button>
         </div>
-        <dl class="status-list">
-          <div><dt>Mode</dt><dd id="modeValue">—</dd></div>
-          <div><dt>Permission</dt><dd id="permissionValue">—</dd></div>
-          <div><dt>Connection</dt><dd id="connectionValue">—</dd></div>
-          <div><dt>Device</dt><dd id="deviceValue">—</dd></div>
-          <div><dt>Rate</dt><dd id="rateValue">—</dd></div>
-        </dl>
+        <div class="status-list">
+          <div class="status-row"><span class="status-label">Mode</span><span id="modeValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Permission</span><span id="permissionValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Connection</span><span id="connectionValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Device</span><span id="deviceValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Rate</span><span id="rateValue" class="status-value">—</span></div>
+        </div>
         <div class="button-row">
           <button id="permissionBtn" class="primary" type="button">Request Permission</button>
           <button id="calibrateBtn" class="secondary" type="button">Calibrate Neutral</button>
@@ -83,9 +83,22 @@
     </section>
   </main>
 
-  <script type="module" src="./bridge-sdk.js"></script>
-  <script type="module" src="./posture-core.js"></script>
-  <script type="module" src="./mock-bridge.js"></script>
-  <script type="module" src="./app.js"></script>
+  <script>
+    window.addEventListener('error', function (event) {
+      const badge = document.getElementById('modeBadge');
+      if (badge) badge.textContent = 'JS error';
+      const log = document.getElementById('eventLog');
+      if (log) {
+        const item = document.createElement('li');
+        const detail = event.error?.message || event.message || 'Script error';
+        item.textContent = `${new Date().toLocaleTimeString()} — ${detail}`;
+        log.prepend(item);
+      }
+    });
+  </script>
+  <script src="./posture-core.js"></script>
+  <script src="./bridge-sdk.js"></script>
+  <script src="./mock-bridge.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

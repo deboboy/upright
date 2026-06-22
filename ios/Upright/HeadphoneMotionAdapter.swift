@@ -9,6 +9,7 @@ final class HeadphoneMotionAdapter {
     private var errorHandler: ((BridgeError) -> Void)?
     private var recentSamples: [MotionSample] = []
     private var currentSampleRateHz: Int = 25
+    private var lastSampleTime: TimeInterval = 0
 
     var authorizationStatus: CMAuthorizationStatus {
         CMHeadphoneMotionManager.authorizationStatus()
@@ -45,7 +46,6 @@ final class HeadphoneMotionAdapter {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: timeout)
 
-        manager.deviceMotionUpdateInterval = 1.0
         manager.startDeviceMotionUpdates(to: queue) { [weak self] _, _ in
             timeout.cancel()
             self?.manager.stopDeviceMotionUpdates()
@@ -70,7 +70,7 @@ final class HeadphoneMotionAdapter {
         motionHandler = onMotion
         errorHandler = onError
         currentSampleRateHz = max(1, sampleRateHz)
-        manager.deviceMotionUpdateInterval = 1.0 / Double(currentSampleRateHz)
+        lastSampleTime = 0
 
         manager.startDeviceMotionUpdates(to: queue) { [weak self] motion, error in
             guard let self else { return }
@@ -79,6 +79,12 @@ final class HeadphoneMotionAdapter {
                 return
             }
             guard let motion else { return }
+            let now = Date().timeIntervalSince1970
+            let minInterval = 1.0 / Double(self.currentSampleRateHz)
+            if now - self.lastSampleTime < minInterval {
+                return
+            }
+            self.lastSampleTime = now
             let sample = MotionSample.from(motion)
             self.recentSamples.append(sample)
             if self.recentSamples.count > 80 {
@@ -92,9 +98,10 @@ final class HeadphoneMotionAdapter {
         manager.stopDeviceMotionUpdates()
         motionHandler = nil
         errorHandler = nil
+        lastSampleTime = 0
     }
 
-    func calibrateNeutral() -> BridgeError.Result<[String: Double]> {
+    func calibrateNeutral() -> Result<[String: Double], BridgeError> {
         let usable = recentSamples.suffix(40)
         guard !usable.isEmpty else {
             return .success(["pitch": 0, "roll": 0, "yaw": 0])
@@ -109,12 +116,5 @@ final class HeadphoneMotionAdapter {
         }
         let count = Double(usable.count)
         return .success(["pitch": pitch / count, "roll": roll / count, "yaw": yaw / count])
-    }
-}
-
-extension HeadphoneMotionAdapter {
-    enum Result<Value> {
-        case success(Value)
-        case failure(BridgeError)
     }
 }

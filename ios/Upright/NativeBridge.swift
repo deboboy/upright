@@ -1,7 +1,8 @@
 import AVFAudio
+import CoreMotion
 import Foundation
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 final class NativeBridge: NSObject {
     weak var webView: WKWebView?
@@ -21,10 +22,11 @@ final class NativeBridge: NSObject {
     }
 
     func install(in configuration: WKWebViewConfiguration) {
-        configuration.preferences.javaScriptEnabled = true
         if #available(iOS 14.0, *) {
+            configuration.defaultWebpagePreferences.allowsContentJavaScript = true
             configuration.userContentController.add(self, contentWorld: .page, name: "nativeBridgeWithReply")
         } else {
+            configuration.preferences.javaScriptEnabled = true
             configuration.userContentController.add(self, name: "nativeBridge")
         }
     }
@@ -69,11 +71,16 @@ final class NativeBridge: NSObject {
     private func requestPermission(_ replyHandler: @escaping (Any?, String?) -> Void) {
         adapter.requestPermission { [weak self] status in
             guard let self else {
-                replyHandler(nil, "Bridge deallocated")
+                let respond = { replyHandler(nil, "Bridge deallocated") }
+                if Thread.isMainThread {
+                    respond()
+                } else {
+                    DispatchQueue.main.async(execute: respond)
+                }
                 return
             }
             self.dispatchStatus()
-            replyHandler(self.permissionString(for: status), nil)
+            self.deliverReply(self.permissionString(for: status), error: nil, to: replyHandler)
         }
     }
 
@@ -87,8 +94,8 @@ final class NativeBridge: NSObject {
             self?.dispatch(BridgeEvent(type: "motion", payload: sample.dictionary()))
         } onError: { [weak self] error in
             self?.active = false
-            self?.dispatch(BridgeEvent(type: "error", payload: ["code": error.code, "message": error.localizedDescription ?? error.code]))
-            reply(error, replyHandler)
+            self?.dispatch(BridgeEvent(type: "error", payload: ["code": error.code, "message": error.errorDescription ?? error.code]))
+            self?.reply(error, replyHandler)
         }
         active = true
         dispatchStatus()
@@ -96,38 +103,78 @@ final class NativeBridge: NSObject {
     }
 
     private func statusDictionary() -> [String: Any] {
-        [
+        var status: [String: Any] = [
             "platform": "ios-native-shell",
             "apiVersion": "1",
             "supported": adapter.isDeviceMotionAvailable,
             "permission": permissionString(for: adapter.authorizationStatus),
             "connection": connectionState(),
             "deviceMotionAvailable": adapter.isDeviceMotionAvailable,
-            "deviceName": deviceName(),
-            "sampleRateHz": adapter.sampleRateHz ?? NSNull()
         ]
+        if let name = deviceName() {
+            status["deviceName"] = name
+        }
+        if let rate = adapter.sampleRateHz {
+            status["sampleRateHz"] = rate
+        }
+        return status
     }
 
     private func dispatchStatus() {
         dispatch(BridgeEvent(type: "status", payload: statusDictionary()))
     }
 
+    func pushInitialStatus() {
+        dispatchStatus()
+    }
+
     private func dispatch(_ event: BridgeEvent) {
-        guard let typeJSON = try? JSONSerialization.data(withJSONObject: event.type),
-              let typeString = String(data: typeJSON, encoding: .utf8),
-              let payloadJSON = try? JSONSerialization.data(withJSONObject: event.payload),
-              let payloadString = String(data: payloadJSON, encoding: .utf8) else {
-            return
+        let emit = { [weak self] in
+            guard let self,
+                  let typeString = self.jsonStringLiteral(event.type),
+                  let payloadString = self.jsonObjectLiteral(event.payload) else {
+                return
+            }
+            self.webView?.evaluateJavaScript(
+                "window.__dispatchNativeEvent(\(typeString), \(payloadString))",
+                completionHandler: nil
+            )
         }
-        webView?.evaluateJavaScript("window.__dispatchNativeEvent(\(typeString), \(payloadString))", completionHandler: nil)
+        if Thread.isMainThread {
+            emit()
+        } else {
+            DispatchQueue.main.async(execute: emit)
+        }
+    }
+
+    private func jsonStringLiteral(_ string: String) -> String? {
+        guard let data = try? JSONEncoder().encode(string) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    private func jsonObjectLiteral(_ object: Any) -> String? {
+        guard JSONSerialization.isValidJSONObject(object),
+              let data = try? JSONSerialization.data(withJSONObject: object) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
     }
 
     private func reply(_ value: Any?, _ replyHandler: @escaping (Any?, String?) -> Void) {
-        replyHandler(value, nil)
+        deliverReply(value, error: nil, to: replyHandler)
     }
 
     private func reply(_ error: BridgeError, _ replyHandler: @escaping (Any?, String?) -> Void) {
-        replyHandler(nil, error.localizedDescription ?? error.code)
+        deliverReply(nil, error: error.errorDescription ?? error.code, to: replyHandler)
+    }
+
+    private func deliverReply(_ value: Any?, error: String?, to replyHandler: @escaping (Any?, String?) -> Void) {
+        let respond = { replyHandler(value, error) }
+        if Thread.isMainThread {
+            respond()
+        } else {
+            DispatchQueue.main.async(execute: respond)
+        }
     }
 
     private func permissionString(for status: CMAuthorizationStatus) -> String {
@@ -209,20 +256,8 @@ final class NativeBridge: NSObject {
     }
 }
 
+@available(iOS 14.0, *)
 extension NativeBridge: WKScriptMessageHandlerWithReply {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard let request = BridgeRequest(body: message.body) else {
-            replyHandlerForLegacy(message)
-            return
-        }
-        handle(request) { value, error in
-            if let error {
-                self.dispatch(BridgeEvent(type: "error", payload: ["code": "native_error", "message": error]))
-            }
-        }
-    }
-
-    @available(iOS 14.0, *)
     func userContentController(
         _ userContentController: WKUserContentController,
         didReceive message: WKScriptMessage,
@@ -234,8 +269,18 @@ extension NativeBridge: WKScriptMessageHandlerWithReply {
         }
         handle(request, replyHandler: replyHandler)
     }
+}
 
-    private func replyHandlerForLegacy(_ message: WKScriptMessage) {
-        dispatch(BridgeEvent(type: "error", payload: ["code": "invalid_request", "message": "Invalid bridge request"]))
+extension NativeBridge: WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let request = BridgeRequest(body: message.body) else {
+            dispatch(BridgeEvent(type: "error", payload: ["code": "invalid_request", "message": "Invalid bridge request"]))
+            return
+        }
+        handle(request) { _, error in
+            if let error {
+                self.dispatch(BridgeEvent(type: "error", payload: ["code": "native_error", "message": error]))
+            }
+        }
     }
 }
