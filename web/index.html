@@ -3,15 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#08111f" />
+  <meta name="theme-color" content="#f4f4f5" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Upright</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <main class="app-shell">
+  <div id="landingView" class="landing hidden" aria-label="Welcome">
+    <div class="landing-stripe-wrap">
+      <div class="posture-stripe" aria-hidden="true"></div>
+    </div>
+    <section class="landing-card">
+      <div class="landing-brand">
+        <h1>Upright</h1>
+        <p class="landing-tagline">Stay stacked. Stay focused.</p>
+      </div>
+      <div class="landing-visual" aria-hidden="true">
+        <svg viewBox="0 0 240 180" fill="currentColor" role="img" aria-label="AirPods silhouette">
+          <path opacity="0.12" d="M120 24c-38 0-68 28-68 62 0 20 10 38 26 48v18c0 8 6 14 14 14h56c8 0 14-6 14-14v-18c16-10 26-28 26-48 0-34-30-62-68-62z"/>
+          <path d="M78 86c-6 0-11 5-12 11l-8 44c-1 6 4 12 10 12 6 0 11-5 12-11l8-44c1-6-4-12-10-12z"/>
+          <path d="M162 86c-6 0-11 5-12 11l-8 44c-1 6 4 12 10 12 6 0 11-5 12-11l8-44c1-6-4-12-10-12z"/>
+          <ellipse cx="78" cy="92" rx="22" ry="28"/>
+          <ellipse cx="162" cy="92" rx="22" ry="28"/>
+          <rect x="72" y="118" width="12" height="36" rx="6"/>
+          <rect x="156" y="118" width="12" height="36" rx="6"/>
+          <path opacity="0.35" d="M98 52h44c6 0 10 4 10 10v8c0 14-10 26-24 30h-16c-14-4-24-16-24-30v-8c0-6 4-10 10-10z"/>
+        </svg>
+      </div>
+      <p class="landing-copy">
+        Track your posture in real time with AirPods motion sensors, gentle alerts, and a focus timer for better sessions.
+      </p>
+      <button id="landingStartBtn" class="cta-black" type="button">Get started</button>
+    </section>
+  </div>
+
+  <main id="appView" class="app-shell hidden">
+    <div class="posture-stripe-wrap">
+      <div class="posture-stripe" aria-hidden="true"></div>
+    </div>
     <header class="hero">
       <div>
-        <p class="eyebrow">Hybrid posture coach</p>
+        <p class="eyebrow">Stay stacked. Stay focused.</p>
         <h1>Upright</h1>
       </div>
       <span id="modeBadge" class="badge">Detecting…</span>
@@ -21,7 +53,7 @@
       <article class="card status-card">
         <div class="section-title">
           <h2>Sensor</h2>
-          <button id="settingsBtn" class="ghost" type="button">Settings</button>
+          <button id="settingsBtn" class="ghost small" type="button">Settings</button>
         </div>
         <div class="status-list">
           <div class="status-row"><span class="status-label">Mode</span><span id="modeValue" class="status-value">—</span></div>

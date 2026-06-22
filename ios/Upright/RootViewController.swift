@@ -17,7 +17,7 @@ final class RootViewController: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        view.backgroundColor = UIColor(red: 0.96, green: 0.96, blue: 0.97, alpha: 1)
 
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()

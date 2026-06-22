@@ -2,13 +2,14 @@
 
 ## Goal
 
-Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking.
+Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking, then improve onboarding and brand experience.
 
 ## Current Status
 
 - **Simulator:** App loads and runs.
 - **Physical iPhone:** App installs, signs, and runs (development team + keychain configured).
 - **AirPods session:** **Working** — motion streams at 25 Hz, posture score updates (good / warning / slouch), focus timer runs, 240+ samples per session verified on device.
+- **Brand refresh:** **Implemented, pending test** — light theme, first-launch landing, posture stripe; needs Clean Build + device run after lunch.
 
 ---
 
@@ -71,6 +72,39 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 
 ---
 
+## Brand Refresh (2026-06-22 — uncommitted)
+
+Inspired by a light editorial comp (Polaroid INSTANT style). User decisions:
+
+| Decision | Choice |
+|----------|--------|
+| Theme | Light only |
+| Scope | First-launch landing + reskin existing app |
+| Accent | Posture rainbow (good / warning / slouch), not full spectrum |
+| Typography | System fonts (SF Pro) |
+| Landing | First launch only via `localStorage` (`upright.landingSeen`) |
+| CTA | Black primary buttons |
+| Tagline | **Stay stacked. Stay focused.** |
+
+### What was built
+
+- **Landing screen:** Upright wordmark, tagline, AirPods silhouette SVG, short copy, black **Get started** button
+- **Light app theme:** White cards, soft gray background, posture stripe on landing and main app
+- **Posture colors on light:** good = teal (`#0d9488`), warning = amber (`#d97706`), slouch = coral (`#e11d48`)
+- **Motion chart** colors updated for light backgrounds
+- **iOS shell:** `RootViewController` background set to light gray to avoid black flash behind WKWebView
+- **README:** Expanded iPhone/AirPods testing instructions (clean build, signing, troubleshooting)
+
+### To test after lunch
+
+1. **Product → Clean Build Folder** (⇧⌘K)
+2. Run on iPhone
+3. Confirm first-launch landing appears, then **Get started** enters the app
+4. Confirm light theme, posture stripe, and AirPods session still work
+5. **Re-show landing:** delete/reinstall app, or `localStorage.removeItem('upright.landingSeen')` in browser mock
+
+---
+
 ## Device Deployment (Manual Steps Completed)
 
 1. Paired iPhone with Mac in Xcode.
@@ -90,6 +124,8 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 
 ## Files Changed
 
+### Committed (pushed to `origin/master`)
+
 | Area | Files |
 |------|--------|
 | iOS project | `ios/Upright.xcodeproj/project.pbxproj` |
@@ -98,14 +134,24 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 | Generator | `scripts/create_repo_files.py` |
 | Docs | `SESSION_SUMMARY.md` |
 
+### Uncommitted (local)
+
+| Area | Files |
+|------|--------|
+| Brand / web | `web/styles.css`, `web/index.html`, `web/app.js` |
+| Native shell | `ios/Upright/RootViewController.swift` (light background) |
+| Docs | `README.md`, `SESSION_SUMMARY.md` |
+
 ---
 
-## Possible Next Steps
+## Next Steps
 
+- **Test brand refresh** on device after lunch (landing + light theme + AirPods flow)
+- Clarify **Motion** card, **Haptic**, **Speak**, and **Reset** controls in the UI
 - Tune posture thresholds (`posture-core.js`) for sensitivity
 - Haptic/speech alerts on sustained slouch
 - Persist session history locally
-- Commit signing team / bundle ID notes in README if onboarding others
+- Commit brand refresh when satisfied with on-device test
 
 ---
 
@@ -115,3 +161,4 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - Motion usage: `NSMotionUsageDescription` in `ios/Upright/Info.plist`
 - Bridge contract: `docs/bridge-contract.md`
 - Test plan: `docs/iphone-test-plan.md`
+- Landing storage key: `upright.landingSeen`

@@ -1,5 +1,7 @@
 const { PostureEngine, radiansToDegrees } = window.UprightPosture;
 
+const LANDING_KEY = 'upright.landingSeen';
+
 const $ = (selector) => document.querySelector(selector);
 
 const els = {
@@ -76,12 +78,12 @@ function drawChart() {
     els.canvas.height = height;
   }
   ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = 'rgba(0,0,0,0.16)';
+  ctx.fillStyle = '#f4f4f5';
   ctx.fillRect(0, 0, width, height);
 
   const data = samples.slice(-90);
   if (data.length < 2) {
-    ctx.fillStyle = '#9fb4c6';
+    ctx.fillStyle = '#71717a';
     ctx.font = `${16 * dpr}px system-ui`;
     ctx.fillText('Start a session to stream motion.', 24 * dpr, 42 * dpr);
     return;
@@ -99,20 +101,20 @@ function drawChart() {
     ctx.stroke();
   };
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+  ctx.strokeStyle = 'rgba(24, 24, 27, 0.1)';
   ctx.lineWidth = 1 * dpr;
   ctx.beginPath();
   ctx.moveTo(0, height / 2);
   ctx.lineTo(width, height / 2);
   ctx.stroke();
 
-  plot('pitch', '#3ee5a4');
-  plot('roll', '#ffd166');
+  plot('pitch', '#0d9488');
+  plot('roll', '#d97706');
 
-  ctx.fillStyle = '#9fb4c6';
+  ctx.fillStyle = '#0d9488';
   ctx.font = `${12 * dpr}px system-ui`;
   ctx.fillText('pitch', 18 * dpr, 24 * dpr);
-  ctx.fillStyle = '#ffd166';
+  ctx.fillStyle = '#d97706';
   ctx.fillText('roll', 72 * dpr, 24 * dpr);
 }
 
@@ -288,4 +290,41 @@ $('#resetBtn').addEventListener('click', () => {
 $('#clearLogBtn').addEventListener('click', () => els.log.replaceChildren());
 window.addEventListener('resize', drawChart);
 
-boot();
+function showApp() {
+  $('#landingView')?.classList.add('hidden');
+  $('#appView')?.classList.remove('hidden');
+  boot();
+}
+
+function dismissLanding() {
+  const landing = $('#landingView');
+  landing?.classList.add('landing-dismiss');
+  setTimeout(() => {
+    try {
+      localStorage.setItem(LANDING_KEY, '1');
+    } catch (_) {
+      /* private browsing */
+    }
+    showApp();
+  }, 280);
+}
+
+function init() {
+  let seen = false;
+  try {
+    seen = localStorage.getItem(LANDING_KEY) === '1';
+  } catch (_) {
+    seen = false;
+  }
+
+  if (seen) {
+    showApp();
+    return;
+  }
+
+  const landing = $('#landingView');
+  landing?.classList.remove('hidden');
+  $('#landingStartBtn')?.addEventListener('click', dismissLanding);
+}
+
+init();
