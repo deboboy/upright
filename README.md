@@ -87,6 +87,8 @@ After launch, the top-right badge should say **Native shell** (not “Browser mo
 
 More scenarios (disconnect mid-session, backgrounding, etc.) are in `docs/iphone-test-plan.md`.
 
+For distributing builds to friends via TestFlight, see `docs/testflight.md`.
+
 ### App UI (quick reference)
 
 | Card / control | Purpose |
