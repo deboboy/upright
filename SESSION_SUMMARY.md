@@ -1,8 +1,8 @@
-# Session Summary — 2026-06-21 / 2026-06-22
+# Session Summary — 2026-06-21 / 2026-06-27
 
 ## Goal
 
-Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking, improve onboarding and brand experience, then polish the Motion card and session history.
+Get the Upright iOS app building and running on a physical iPhone with live AirPods posture tracking, improve onboarding and brand experience, polish the Motion card and session history, and **ship a TestFlight beta to friends**.
 
 ## Current Status
 
@@ -13,29 +13,40 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - **Motion card:** **Working** — pitch/roll Δ readouts, auto-scaled degree chart, RAF-throttled redraws.
 - **Session history:** **Implemented** — saves summaries to `localStorage` on stop (`upright.sessions`).
 - **Connection detection:** **Fixed** — delegate + `isDeviceMotionAvailable`; Sensor card shows **Motion ready**.
-- **TestFlight (local upload):** Blocked — Mac on macOS 24 / Xcode 16; App Store Connect requires iOS 26 SDK (Xcode 26 / macOS 26.2+).
-- **TestFlight (GitHub Actions):** **Workflow added** — builds in cloud; pending API key + GitHub secrets setup.
-- **App target:** **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`) — fixes iPad orientation validation error.
+- **TestFlight (local upload):** **Blocked** — Mac on macOS 24 / Xcode 16; App Store Connect requires iOS 26 SDK (Xcode 26 / macOS 26.2+). User chose **not** to upgrade macOS.
+- **TestFlight (GitHub Actions):** **Workflow pushed to `origin/master`** (`9ee1131`) — cloud build path ready; **API key + GitHub secrets not yet configured**.
+- **App target:** **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`) — fixes iPad orientation validation error (error 1 on upload).
 
 ---
 
-## Your Next Steps
+## Your Next Steps (Resume Tomorrow Morning)
 
-Ship Upright to friends via **GitHub Actions** (no macOS upgrade on your MacBook).
+**Pick up here:** GitHub Actions is on `master`; local push succeeded after `gh auth refresh -s workflow`.
 
-1. **Reinstall Xcode 16** (optional) — Mac App Store → “last compatible version” for **USB testing on your own iPhone** only.
-2. **Pull latest `master`** — includes `.github/workflows/testflight.yml` after this push.
-3. **App Store Connect API key** — Users and Access → Integrations → App Store Connect API → Generate key (App Manager or Admin). Download `.p8`; note Issuer ID and Key ID.
-4. **GitHub secrets** — repo → Settings → Secrets and variables → Actions:
+### Done tonight ✓
+- [x] Attempted local Archive → App Store Connect upload
+- [x] Fixed upload error 1 (iPhone-only target)
+- [x] Identified upload error 2 (needs Xcode 26 — blocked without macOS upgrade)
+- [x] Chose **GitHub Actions** instead of macOS/Xcode upgrade
+- [x] Added `.github/workflows/testflight.yml` + `docs/github-actions-testflight.md`
+- [x] Updated `docs/testflight.md` (signing steps, upload errors, Xcode Cloud note)
+- [x] Committed and **pushed** to `origin/master`
+
+### Tomorrow morning — in order
+1. [ ] **App Store Connect API key** — Users and Access → Integrations → App Store Connect API → Generate (App Manager or Admin). Download `.p8`; save Issuer ID + Key ID.
+2. [ ] **GitHub secrets** — repo → Settings → Secrets and variables → Actions:
    - `APPSTORE_ISSUER_ID`
    - `APPSTORE_API_KEY_ID`
    - `APPSTORE_API_PRIVATE_KEY` (full `.p8` contents)
    - `APPLE_TEAM_ID` (10-char team ID, e.g. `7B4D6525KF`)
-5. **Run workflow** — GitHub → Actions → **TestFlight** → **Run workflow** → wait for green checkmark (~10–20 min).
-6. **TestFlight testers** — App Store Connect → Upright → TestFlight → add internal/external testers (see `docs/testflight.md`).
-7. **Share friend brief** — copy/paste block in `docs/testflight.md` (AirPods in ears, Motion ready: yes, Start Session).
+3. [ ] **Run workflow** — GitHub → Actions → **TestFlight** → **Run workflow** → wait for green checkmark (~10–20 min).
+4. [ ] **TestFlight** — App Store Connect → Upright → TestFlight → wait for processing → add testers.
+5. [ ] **Share friend brief** — `docs/testflight.md` (AirPods in ears, Motion ready: yes, Start Session).
 
-**Docs:** `docs/github-actions-testflight.md` (CI setup) · `docs/testflight.md` (TestFlight + troubleshooting)
+### Optional (when convenient)
+- [ ] Reinstall **Xcode 16** (“last compatible version”) for USB testing on your own iPhone — not required for TestFlight via GitHub.
+
+**Docs:** `docs/github-actions-testflight.md` · `docs/testflight.md`
 
 **Later (product):** Clarify Haptic/Speak/Reset UI, tune posture thresholds, slouch alerts, history detail view.
 
@@ -172,7 +183,23 @@ Ship Upright to friends via **GitHub Actions** (no macOS upgrade on your MacBook
 
 ---
 
-## Files Changed (Latest Commit)
+## TestFlight Distribution Progress (2026-06-27)
+
+| Step | Status |
+|------|--------|
+| App Store Connect app record | Assumed done (upload attempted) |
+| Local Archive + upload | Failed — SDK 26 required |
+| iPhone-only target fix | **Done** |
+| GitHub Actions workflow | **Pushed** (`9ee1131`) |
+| `gh auth refresh -s workflow` + push | **Done** |
+| App Store Connect API key | **Not started** |
+| GitHub Actions secrets | **Not started** |
+| First cloud build | **Pending** |
+| TestFlight testers invited | **Pending** |
+
+---
+
+## Files Changed (Latest Commit — `9ee1131`)
 
 | Area | Files |
 |------|--------|
