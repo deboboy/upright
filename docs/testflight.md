@@ -22,7 +22,7 @@ Sign in at [appstoreconnect.apple.com](https://appstoreconnect.apple.com) and cr
 
 | Field | Value |
 |-------|-------|
-| Name | Upright |
+| Name | Be Upright |
 | Bundle ID | `com.lastmyle.upright` (must match Xcode) |
 | SKU | e.g. `upright-ios` |
 
@@ -36,10 +36,19 @@ Allow about 30–60 minutes for the first upload and processing.
 
 ### Step 1 — Configure signing in Xcode
 
+**TARGETS is not a menu-bar item.** It is a section in the project settings panel.
+
 1. Open `ios/Upright.xcodeproj` in Xcode.
-2. Select the blue **Upright** project → **TARGETS → Upright** → **Signing & Capabilities**.
-3. Enable **Automatically manage signing**.
-4. Choose your **paid Developer Program team** (not a personal/free team if you want TestFlight).
+2. In the **left sidebar** (Project Navigator), click the **blue Upright icon at the very top** of the file tree — the one that looks like an app blueprint, **not** a `.swift` file or the `web/` folder.
+3. The **center panel** opens the project editor. On the **left edge of that center panel**, you should see two labeled sections:
+   - **PROJECT** → Upright
+   - **TARGETS** → Upright
+4. Under **TARGETS**, click **Upright** (the app target, not the project row above it).
+5. At the **top of the center panel**, open the **Signing & Capabilities** tab.
+6. Enable **Automatically manage signing**.
+7. Choose your **paid Developer Program team** (not a personal/free team if you want TestFlight).
+
+**If you do not see PROJECT / TARGETS:** you likely selected a source file instead of the project. Click the blue **Upright** root item again in the left sidebar. If the left sidebar is hidden, show it with **View → Navigators → Project** (⌘1).
 
 Bundle ID in the project: **`com.lastmyle.upright`**. Change it in Xcode only if you need a unique ID for your Apple account.
 
@@ -50,6 +59,10 @@ Bundle ID in the project: **`com.lastmyle.upright`**. Change it in Xcode only if
 3. **Product → Clean Build Folder** (⇧⌘K) if you recently changed web files.
 4. **Product → Archive**.
 5. In the Organizer window: **Distribute App** → **App Store Connect** → **Upload**.
+
+**Use Product → Archive on your Mac** — not **Start Build** in Xcode Cloud. Cloud builds are optional CI; TestFlight upload works from a local archive.
+
+**Can't upgrade macOS / Xcode?** Use **GitHub Actions** to build and upload from the cloud. Your MacBook only needs `git push` and GitHub secrets — see `docs/github-actions-testflight.md`.
 
 ### Step 3 — Enable TestFlight
 
@@ -68,6 +81,33 @@ For each new build you send to testers:
 1. Bump **Build** in Xcode (e.g. `1` → `2`). **Version** can stay `1.0` until you want a visible version change.
 2. Archive and upload again.
 3. TestFlight notifies testers when the new build is ready.
+
+---
+
+## Upload Validation Errors
+
+### “SDK version issue … must be built with the iOS 26 SDK … Xcode 26 or later”
+
+Apple requires the **latest Xcode** for App Store Connect uploads. Your archive was built with an older SDK (e.g. iOS 18.2 / Xcode 16).
+
+**Fix:**
+
+1. Install **Xcode 26** (or the latest Xcode from the Mac App Store / [developer.apple.com/xcode](https://developer.apple.com/xcode)).
+2. Open the project in the new Xcode.
+3. **Product → Clean Build Folder** (⇧⌘K).
+4. **Product → Archive** again and re-upload.
+
+Check your version: **Xcode → About Xcode**.
+
+**Alternative:** If you cannot install Xcode 26 locally, use `docs/github-actions-testflight.md` — GitHub builds with the latest Xcode and uploads to TestFlight. Your MacBook does not need a macOS upgrade.
+
+### “Invalid bundle … UIInterfaceOrientationPortrait … iPad multitasking”
+
+The app was set to run on **iPad** with portrait-only orientations. iPad multitasking requires all orientations unless the app is iPhone-only.
+
+**Fix (already applied in repo):** Upright is **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`). Pull latest, clean, archive, and upload again.
+
+If you still see this in Xcode: **TARGETS → Upright → General → Supported Destinations** — ensure only **iPhone** is listed (remove iPad if present).
 
 ---
 

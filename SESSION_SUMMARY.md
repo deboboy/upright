@@ -13,6 +13,31 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - **Motion card:** **Working** — pitch/roll Δ readouts, auto-scaled degree chart, RAF-throttled redraws.
 - **Session history:** **Implemented** — saves summaries to `localStorage` on stop (`upright.sessions`).
 - **Connection detection:** **Fixed** — delegate + `isDeviceMotionAvailable`; Sensor card shows **Motion ready**.
+- **TestFlight (local upload):** Blocked — Mac on macOS 24 / Xcode 16; App Store Connect requires iOS 26 SDK (Xcode 26 / macOS 26.2+).
+- **TestFlight (GitHub Actions):** **Workflow added** — builds in cloud; pending API key + GitHub secrets setup.
+- **App target:** **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`) — fixes iPad orientation validation error.
+
+---
+
+## Your Next Steps
+
+Ship Upright to friends via **GitHub Actions** (no macOS upgrade on your MacBook).
+
+1. **Reinstall Xcode 16** (optional) — Mac App Store → “last compatible version” for **USB testing on your own iPhone** only.
+2. **Pull latest `master`** — includes `.github/workflows/testflight.yml` after this push.
+3. **App Store Connect API key** — Users and Access → Integrations → App Store Connect API → Generate key (App Manager or Admin). Download `.p8`; note Issuer ID and Key ID.
+4. **GitHub secrets** — repo → Settings → Secrets and variables → Actions:
+   - `APPSTORE_ISSUER_ID`
+   - `APPSTORE_API_KEY_ID`
+   - `APPSTORE_API_PRIVATE_KEY` (full `.p8` contents)
+   - `APPLE_TEAM_ID` (10-char team ID, e.g. `7B4D6525KF`)
+5. **Run workflow** — GitHub → Actions → **TestFlight** → **Run workflow** → wait for green checkmark (~10–20 min).
+6. **TestFlight testers** — App Store Connect → Upright → TestFlight → add internal/external testers (see `docs/testflight.md`).
+7. **Share friend brief** — copy/paste block in `docs/testflight.md` (AirPods in ears, Motion ready: yes, Start Session).
+
+**Docs:** `docs/github-actions-testflight.md` (CI setup) · `docs/testflight.md` (TestFlight + troubleshooting)
+
+**Later (product):** Clarify Haptic/Speak/Reset UI, tune posture thresholds, slouch alerts, history detail view.
 
 ---
 
@@ -68,6 +93,15 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 **Symptom:** `Cannot convert value of type '() -> Void?' to expected argument type 'DispatchWorkItem'`.
 
 **Fix:** Inlined `DispatchQueue.main.async` closure instead of passing optional-returning closure to `execute:`.
+
+### 13. TestFlight upload validation errors
+
+**Symptom:** Upload failed — iPad orientation bundle error + iOS 26 SDK required.
+
+**Fix:**
+- Set app to **iPhone only** in `project.pbxproj` (orientation / multitasking error).
+- Local upload still blocked without Xcode 26 / macOS 26.2+.
+- Added **GitHub Actions** workflow (`.github/workflows/testflight.yml`) to build and upload from cloud Macs.
 
 ---
 
@@ -138,24 +172,14 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 
 ---
 
-## Files Changed (Pending Commit)
+## Files Changed (Latest Commit)
 
 | Area | Files |
 |------|--------|
-| Native shell | `HeadphoneMotionAdapter.swift`, `NativeBridge.swift`, `RootViewController.swift` |
-| Web app | `app.js`, `bridge-sdk.js`, `index.html`, `styles.css`, `session-store.js` (new) |
-| Tooling | `package.json` (check script) |
-| Docs | `SESSION_SUMMARY.md` |
-
----
-
-## Next Steps
-
-- Clarify **Haptic**, **Speak**, and **Reset** controls in the UI
-- Tune posture thresholds (`posture-core.js`)
-- Haptic/speech alerts on sustained slouch
-- Tap history row to expand session detail
-- Sync `scripts/create_repo_files.py` with manual web/native edits
+| CI | `.github/workflows/testflight.yml` (new) |
+| iOS project | `ios/Upright.xcodeproj/project.pbxproj` (iPhone only) |
+| Docs | `docs/testflight.md`, `docs/github-actions-testflight.md` (new), `SESSION_SUMMARY.md` |
+| Docs | `README.md` (Xcode signing steps, TestFlight link) |
 
 ---
 
@@ -165,5 +189,7 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - Motion usage: `NSMotionUsageDescription` in `ios/Upright/Info.plist`
 - Bridge contract: `docs/bridge-contract.md`
 - Test plan: `docs/iphone-test-plan.md`
+- TestFlight (local): `docs/testflight.md`
+- TestFlight (GitHub Actions): `docs/github-actions-testflight.md`
 - Storage keys: `upright.landingSeen`, `upright.sessions`
 - **Always Clean Build Folder** (⇧⌘K) after web changes before device run

@@ -43,10 +43,11 @@ Use a **physical iPhone** for real AirPods motion. The simulator cannot access h
 ### First-time Xcode setup
 
 1. Open `ios/Upright.xcodeproj` in Xcode.
-2. In the left sidebar, click the blue **Upright** project icon (not a `.swift` file).
-3. Under **TARGETS**, select **Upright** → **Signing & Capabilities**.
-4. Check **Automatically manage signing** and choose your **Team** (personal Apple ID is fine).
-5. If the bundle ID conflicts, change it to something unique (e.g. `com.yourname.upright`).
+2. In the **left sidebar**, click the **blue Upright project icon at the top** of the file tree (not a `.swift` file).
+3. In the **center panel**, use the **TARGETS** section on the left (not the menu bar) and select **Upright**.
+4. Open the **Signing & Capabilities** tab at the top of the center panel.
+5. Check **Automatically manage signing** and choose your **Team** (personal Apple ID is fine).
+6. If the bundle ID conflicts, change it to something unique (e.g. `com.yourname.upright`).
 
 On first run, macOS may prompt for your **Mac login password** (not your Apple ID) so `codesign` can access your development certificate. Click **Always Allow**.
 
