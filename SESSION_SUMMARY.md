@@ -14,37 +14,25 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - **Session history:** **Implemented** — saves summaries to `localStorage` on stop (`upright.sessions`).
 - **Connection detection:** **Fixed** — delegate + `isDeviceMotionAvailable`; Sensor card shows **Motion ready**.
 - **TestFlight (local upload):** **Blocked** — Mac on macOS 24 / Xcode 16; App Store Connect requires iOS 26 SDK (Xcode 26 / macOS 26.2+). User chose **not** to upgrade macOS.
-- **TestFlight (GitHub Actions):** **Workflow pushed to `origin/master`** (`9ee1131`) — cloud build path ready; **API key + GitHub secrets not yet configured**.
+- **TestFlight (GitHub Actions):** **Upload succeeded** — workflow run [#4](https://github.com/deboboy/upright/actions/runs/28523810877) green (~3 min). **TestFlight tab shows “No Builds”** — investigating bundle ID mismatch (see Debug).
+- **App Store Connect app name:** **Be Upright** (verify bundle ID matches `com.lastmyle.upright`).
 - **App target:** **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`) — fixes iPad orientation validation error (error 1 on upload).
 
 ---
 
-## Your Next Steps (Resume Tomorrow Morning)
+## Your Next Steps (Resume When Back)
 
-**Pick up here:** GitHub Actions is on `master`; local push succeeded after `gh auth refresh -s workflow`.
+### Done ✓
+- [x] App Store Connect API key (Admin) + GitHub repository secrets
+- [x] GitHub Actions **TestFlight #4** — archive, export, upload all green
+- [x] Export signing fix — Admin API key (App Manager failed with cloud signing error)
 
-### Done tonight ✓
-- [x] Attempted local Archive → App Store Connect upload
-- [x] Fixed upload error 1 (iPhone-only target)
-- [x] Identified upload error 2 (needs Xcode 26 — blocked without macOS upgrade)
-- [x] Chose **GitHub Actions** instead of macOS/Xcode upgrade
-- [x] Added `.github/workflows/testflight.yml` + `docs/github-actions-testflight.md`
-- [x] Updated `docs/testflight.md` (signing steps, upload errors, Xcode Cloud note)
-- [x] Committed and **pushed** to `origin/master`
-
-### Tomorrow morning — in order
-1. [ ] **App Store Connect API key** — Users and Access → Integrations → App Store Connect API → Generate (App Manager or Admin). Download `.p8`; save Issuer ID + Key ID.
-2. [ ] **GitHub secrets** — repo → Settings → Secrets and variables → Actions:
-   - `APPSTORE_ISSUER_ID`
-   - `APPSTORE_API_KEY_ID`
-   - `APPSTORE_API_PRIVATE_KEY` (full `.p8` contents)
-   - `APPLE_TEAM_ID` (10-char team ID, e.g. `7B4D6525KF`)
-3. [ ] **Run workflow** — GitHub → Actions → **TestFlight** → **Run workflow** → wait for green checkmark (~10–20 min).
-4. [ ] **TestFlight** — App Store Connect → Upright → TestFlight → wait for processing → add testers.
-5. [ ] **Share friend brief** — `docs/testflight.md` (AirPods in ears, Motion ready: yes, Start Session).
-
-### Optional (when convenient)
-- [ ] Reinstall **Xcode 16** (“last compatible version”) for USB testing on your own iPhone — not required for TestFlight via GitHub.
+### Next — in order
+1. [ ] **Verify bundle ID** on **Be Upright** → App Information (must be `com.lastmyle.upright`) — see **Debug** below
+2. [ ] Fix mismatch (new ASC app or change Xcode bundle ID) if needed
+3. [ ] Re-run **Actions → TestFlight → Run workflow** if bundle ID was wrong
+4. [ ] **TestFlight** → confirm build **Processing** or **Ready to Test** → add testers
+5. [ ] **Share friend brief** — `docs/testflight.md`
 
 **Docs:** `docs/github-actions-testflight.md` · `docs/testflight.md`
 
@@ -183,19 +171,76 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 
 ---
 
-## TestFlight Distribution Progress (2026-06-27)
+## TestFlight Distribution Progress (updated 2026-07-01)
 
 | Step | Status |
 |------|--------|
-| App Store Connect app record | Assumed done (upload attempted) |
+| App Store Connect app record | **Be Upright** created |
 | Local Archive + upload | Failed — SDK 26 required |
 | iPhone-only target fix | **Done** |
-| GitHub Actions workflow | **Pushed** (`9ee1131`) |
-| `gh auth refresh -s workflow` + push | **Done** |
-| App Store Connect API key | **Not started** |
-| GitHub Actions secrets | **Not started** |
-| First cloud build | **Pending** |
+| GitHub Actions workflow | **Done** |
+| Admin API key + GitHub secrets | **Done** |
+| First cloud build (run #4) | **Succeeded** — upload reported no errors |
+| Build visible in TestFlight | **No** — see Debug section |
 | TestFlight testers invited | **Pending** |
+
+---
+
+## Debug: GitHub green but TestFlight shows “No Builds”
+
+Upload likely succeeded, but **“No Builds”** almost always means the build isn’t tied to **Be Upright** — usually a **bundle ID mismatch**.
+
+### What GitHub uploaded
+
+Workflow run **TestFlight #4** (`28523810877`, ~3 min, all steps green):
+
+- **Archive:** succeeded — bundle ID `com.lastmyle.upright` (confirmed in logs)
+- **Export:** succeeded after switching API key to **Admin** (App Manager → `Cloud signing permission error` / `No profiles were found`)
+- **Upload:** `No errors uploading archive at '.../Upright.ipa'`
+
+Xcode project bundle ID: **`com.lastmyle.upright`** (`ios/Upright.xcodeproj`).
+
+### What to check in App Store Connect
+
+1. **Be Upright → Bundle ID**  
+   - Open **Be Upright** → **Distribution** or **App Information**  
+   - **Bundle ID** must be exactly **`com.lastmyle.upright`**  
+   - If it’s different (e.g. `com.lastmyle.beupright`), the build is attached to another app (or not visible under Be Upright).
+
+2. **Activity**  
+   - App Store Connect home → **Activity** (bell)  
+   - Look for upload/processing messages or errors for `com.lastmyle.upright`.
+
+3. **Email**  
+   - Inbox for Apple / App Store Connect processing failure notices.
+
+4. **Timing**  
+   - Builds can take 30–60 min to appear as **Processing**  
+   - **No Builds** (empty list) usually means mismatch, not slow processing (slow processing typically shows **Processing**).
+
+### If bundle IDs don’t match — pick one
+
+| Option | Action |
+|--------|--------|
+| **A (easiest)** | Create a new App Store Connect app with bundle ID **`com.lastmyle.upright`**, then re-run GitHub Actions **TestFlight** workflow |
+| **B** | Change Xcode `PRODUCT_BUNDLE_IDENTIFIER` to match **Be Upright**’s bundle ID, commit, re-run workflow |
+
+### Failed export before Admin key (for reference)
+
+```
+error: exportArchive Cloud signing permission error
+error: exportArchive No profiles for 'com.lastmyle.upright' were found
+```
+
+**Fix:** App Store Connect API key with **Admin** role (not App Manager). Update `APPSTORE_API_KEY_ID` and `APPSTORE_API_PRIVATE_KEY` in GitHub secrets.
+
+### Resume checklist
+
+1. Note **Be Upright** bundle ID from App Information  
+2. If ≠ `com.lastmyle.upright` → option A or B above  
+3. Re-run workflow if needed  
+4. TestFlight tab → **Processing** / **Ready to Test**  
+5. Internal testers → install via TestFlight app  
 
 ---
 

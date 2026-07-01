@@ -29,9 +29,19 @@ If not done already, create **Upright** in [App Store Connect](https://appstorec
 ### 2. App Store Connect API key
 
 1. [App Store Connect](https://appstoreconnect.apple.com) → **Users and Access** → **Integrations** → **App Store Connect API**
-2. **Generate API Key** (role: **App Manager** or **Admin**)
-3. Download the `.p8` file (only once)
-4. Note **Issuer ID** and **Key ID**
+2. **Generate API Key** with role **Admin** (required for cloud distribution signing in CI)
+3. Name suggestion: `Upright GitHub Actions`
+4. Download the `.p8` file (only once)
+5. Note **Issuer ID** and **Key ID**
+
+**Important:** **App Manager** is not enough for `xcodebuild -exportArchive` with automatic signing. You need **Admin** or you will see:
+
+```text
+error: exportArchive Cloud signing permission error
+error: exportArchive No profiles for 'com.lastmyle.upright' were found
+```
+
+If you already created an App Manager key, generate a new **Admin** key and update the three `APPSTORE_*` GitHub secrets.
 
 ### 3. GitHub repository secrets
 
@@ -81,11 +91,17 @@ runs-on: macos-latest   # or a newer label when available
 
 and re-run.
 
-### Signing / provisioning errors
+### `Cloud signing permission error` / `No profiles were found`
 
-- Confirm bundle ID in Xcode matches App Store Connect: `com.lastmyle.upright`
-- API key role must allow signing (App Manager or Admin)
-- `-allowProvisioningUpdates` lets Xcode create/update profiles using the API key
+The **archive** step succeeded but **export** failed. Common causes:
+
+1. **API key role is App Manager** — create a new key with **Admin** access and update GitHub secrets (`APPSTORE_API_KEY_ID`, `APPSTORE_API_PRIVATE_KEY`). Issuer ID stays the same.
+2. **Bundle ID not registered** — [developer.apple.com/account/resources/identifiers](https://developer.apple.com/account/resources/identifiers/list) → confirm `com.lastmyle.upright` exists (App IDs).
+3. **App record missing** — App Store Connect → **Apps** → **Upright** with the same bundle ID.
+
+After fixing, re-run **Actions → TestFlight → Run workflow**.
+
+### Signing / provisioning errors (other)
 
 ### Upload succeeded but no build in TestFlight
 
