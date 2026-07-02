@@ -19,7 +19,7 @@
   <key>CFBundleShortVersionString</key>
   <string>1.0</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>2</string>
   <key>LSRequiresIPhoneOS</key>
   <true/>
   <key>UIApplicationSceneManifest</key>
@@ -47,6 +47,8 @@
   </array>
   <key>NSMotionUsageDescription</key>
   <string>Upright uses headphone motion to help you track posture and stay upright.</string>
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
   <key>UIApplicationSupportsIndirectInputEvents</key>
   <true/>
 </dict>

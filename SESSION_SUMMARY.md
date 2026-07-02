@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-21 / 2026-06-27
+# Session Summary — 2026-06-21 / 2026-07-01
 
 ## Goal
 
@@ -14,9 +14,10 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - **Session history:** **Implemented** — saves summaries to `localStorage` on stop (`upright.sessions`).
 - **Connection detection:** **Fixed** — delegate + `isDeviceMotionAvailable`; Sensor card shows **Motion ready**.
 - **TestFlight (local upload):** **Blocked** — Mac on macOS 24 / Xcode 16; App Store Connect requires iOS 26 SDK (Xcode 26 / macOS 26.2+). User chose **not** to upgrade macOS.
-- **TestFlight (GitHub Actions):** **Upload succeeded** — workflow run [#4](https://github.com/deboboy/upright/actions/runs/28523810877) green (~3 min). **TestFlight tab shows “No Builds”** — investigating bundle ID mismatch (see Debug).
-- **App Store Connect app name:** **Be Upright** (verify bundle ID matches `com.lastmyle.upright`).
+- **TestFlight (GitHub Actions):** **Build 1 live** — workflow run [#4](https://github.com/deboboy/upright/actions/runs/28523810877) uploaded successfully. **Be Upright → TestFlight → build 1.0 (1)** is **Ready to Submit** (expires in 90 days).
+- **App Store Connect app name:** **Be Upright** — bundle ID verified **`com.lastmyle.upright`**.
 - **App target:** **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`) — fixes iPad orientation validation error (error 1 on upload).
+- **Next CI build:** **Build 2** — bumped `CFBundleVersion` + `ITSAppUsesNonExemptEncryption = false` in `Info.plist` (skips export compliance prompt on future uploads).
 
 ---
 
@@ -26,13 +27,16 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - [x] App Store Connect API key (Admin) + GitHub repository secrets
 - [x] GitHub Actions **TestFlight #4** — archive, export, upload all green
 - [x] Export signing fix — Admin API key (App Manager failed with cloud signing error)
+- [x] Bundle ID verified on **Be Upright** (`com.lastmyle.upright`)
+- [x] Export compliance completed — **None of the algorithms mentioned above**
+- [x] Build **1.0 (1)** **Ready to Submit** in TestFlight
 
 ### Next — in order
-1. [ ] **Verify bundle ID** on **Be Upright** → App Information (must be `com.lastmyle.upright`) — see **Debug** below
-2. [ ] Fix mismatch (new ASC app or change Xcode bundle ID) if needed
-3. [ ] Re-run **Actions → TestFlight → Run workflow** if bundle ID was wrong
-4. [ ] **TestFlight** → confirm build **Processing** or **Ready to Test** → add testers
-5. [ ] **Share friend brief** — `docs/testflight.md`
+1. [ ] **TestFlight → Internal Testing** → create group → add your Apple ID email
+2. [ ] Enable **build 1** for the group → install via **TestFlight** app on iPhone
+3. [ ] Add friends’ Apple ID emails to the same internal group
+4. [ ] **Share friend brief** — `docs/testflight.md`
+5. [ ] (Optional) Commit/push triggers build **2** via GitHub Actions when you want latest plist fixes in TestFlight
 
 **Docs:** `docs/github-actions-testflight.md` · `docs/testflight.md`
 
@@ -101,6 +105,17 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 - Set app to **iPhone only** in `project.pbxproj` (orientation / multitasking error).
 - Local upload still blocked without Xcode 26 / macOS 26.2+.
 - Added **GitHub Actions** workflow (`.github/workflows/testflight.yml`) to build and upload from cloud Macs.
+
+### 14. TestFlight showed “No Builds” despite green GitHub upload
+
+**Symptom:** TestFlight tab empty; Activity showed no errors; bundle ID was correct.
+
+**Cause:** Build **1.0 (1)** uploaded successfully but blocked on **Missing Compliance** (export encryption). A re-upload hit **ITMS-90189** (redundant binary — build 1 already registered).
+
+**Fix:**
+- App Store Connect → **Manage** → **None of the algorithms mentioned above** (app uses only Apple OS APIs, no custom crypto)
+- Build status → **Ready to Submit**
+- For future uploads: `ITSAppUsesNonExemptEncryption = false` in `Info.plist`; increment build number before each new upload
 
 ---
 
@@ -180,50 +195,33 @@ Get the Upright iOS app building and running on a physical iPhone with live AirP
 | iPhone-only target fix | **Done** |
 | GitHub Actions workflow | **Done** |
 | Admin API key + GitHub secrets | **Done** |
-| First cloud build (run #4) | **Succeeded** — upload reported no errors |
-| Build visible in TestFlight | **No** — see Debug section |
-| TestFlight testers invited | **Pending** |
+| First cloud build (run #4) | **Succeeded** — build **1.0 (1)** uploaded |
+| Export compliance | **Done** — none of the algorithms above |
+| Build visible in TestFlight | **Ready to Submit** (90-day expiry) |
+| Internal testers invited | **Next** — create group + add emails |
+| Build 2 (CI) | **Queued in repo** — bump + encryption plist flag |
 
 ---
 
-## Debug: GitHub green but TestFlight shows “No Builds”
+## TestFlight Debug Notes (resolved)
 
-Upload likely succeeded, but **“No Builds”** almost always means the build isn’t tied to **Be Upright** — usually a **bundle ID mismatch**.
-
-### What GitHub uploaded
+### What happened
 
 Workflow run **TestFlight #4** (`28523810877`, ~3 min, all steps green):
 
-- **Archive:** succeeded — bundle ID `com.lastmyle.upright` (confirmed in logs)
-- **Export:** succeeded after switching API key to **Admin** (App Manager → `Cloud signing permission error` / `No profiles were found`)
+- **Archive:** succeeded — bundle ID `com.lastmyle.upright`
+- **Export:** succeeded with **Admin** API key
 - **Upload:** `No errors uploading archive at '.../Upright.ipa'`
+- **Build Uploads:** first attempt **Failed** (7:13 AM); second **Complete** (7:36 AM)
+- **TestFlight:** build **1** showed **Missing Compliance** until export form completed
+- **Email ITMS-90189:** redundant re-upload of build **1** — increment build number before next CI run
 
-Xcode project bundle ID: **`com.lastmyle.upright`** (`ios/Upright.xcodeproj`).
+### Export compliance (for reference)
 
-### What to check in App Store Connect
+For Upright (local WKWebView + AirPods motion, no custom crypto):
 
-1. **Be Upright → Bundle ID**  
-   - Open **Be Upright** → **Distribution** or **App Information**  
-   - **Bundle ID** must be exactly **`com.lastmyle.upright`**  
-   - If it’s different (e.g. `com.lastmyle.beupright`), the build is attached to another app (or not visible under Be Upright).
-
-2. **Activity**  
-   - App Store Connect home → **Activity** (bell)  
-   - Look for upload/processing messages or errors for `com.lastmyle.upright`.
-
-3. **Email**  
-   - Inbox for Apple / App Store Connect processing failure notices.
-
-4. **Timing**  
-   - Builds can take 30–60 min to appear as **Processing**  
-   - **No Builds** (empty list) usually means mismatch, not slow processing (slow processing typically shows **Processing**).
-
-### If bundle IDs don’t match — pick one
-
-| Option | Action |
-|--------|--------|
-| **A (easiest)** | Create a new App Store Connect app with bundle ID **`com.lastmyle.upright`**, then re-run GitHub Actions **TestFlight** workflow |
-| **B** | Change Xcode `PRODUCT_BUNDLE_IDENTIFIER` to match **Be Upright**’s bundle ID, commit, re-run workflow |
+- App Store Connect → **Manage** → **None of the algorithms mentioned above**
+- Or set in `Info.plist`: `ITSAppUsesNonExemptEncryption` = `false` (done for build 2+)
 
 ### Failed export before Admin key (for reference)
 
@@ -232,33 +230,25 @@ error: exportArchive Cloud signing permission error
 error: exportArchive No profiles for 'com.lastmyle.upright' were found
 ```
 
-**Fix:** App Store Connect API key with **Admin** role (not App Manager). Update `APPSTORE_API_KEY_ID` and `APPSTORE_API_PRIVATE_KEY` in GitHub secrets.
-
-### Resume checklist
-
-1. Note **Be Upright** bundle ID from App Information  
-2. If ≠ `com.lastmyle.upright` → option A or B above  
-3. Re-run workflow if needed  
-4. TestFlight tab → **Processing** / **Ready to Test**  
-5. Internal testers → install via TestFlight app  
+**Fix:** App Store Connect API key with **Admin** role (not App Manager).
 
 ---
 
-## Files Changed (Latest Commit — `9ee1131`)
+## Files Changed (Latest Commit)
 
 | Area | Files |
 |------|--------|
-| CI | `.github/workflows/testflight.yml` (new) |
-| iOS project | `ios/Upright.xcodeproj/project.pbxproj` (iPhone only) |
-| Docs | `docs/testflight.md`, `docs/github-actions-testflight.md` (new), `SESSION_SUMMARY.md` |
-| Docs | `README.md` (Xcode signing steps, TestFlight link) |
+| iOS | `ios/Upright/Info.plist` — build **2**, `ITSAppUsesNonExemptEncryption` |
+| iOS | `ios/Upright.xcodeproj/project.pbxproj` — `CURRENT_PROJECT_VERSION = 2` |
+| Docs | `SESSION_SUMMARY.md` — TestFlight resolved, next steps |
 
 ---
 
 ## Reference
 
-- Bundle ID: `com.lastmyle.upright` (change in Xcode if signing conflicts)
+- Bundle ID: `com.lastmyle.upright`
 - Motion usage: `NSMotionUsageDescription` in `ios/Upright/Info.plist`
+- Export compliance: `ITSAppUsesNonExemptEncryption` in `ios/Upright/Info.plist`
 - Bridge contract: `docs/bridge-contract.md`
 - Test plan: `docs/iphone-test-plan.md`
 - TestFlight (local): `docs/testflight.md`
