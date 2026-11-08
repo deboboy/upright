@@ -50,25 +50,6 @@
     </header>
 
     <section class="grid">
-      <article class="card status-card">
-        <div class="section-title">
-          <h2>Sensor</h2>
-          <button id="settingsBtn" class="ghost small" type="button">Settings</button>
-        </div>
-        <div class="status-list">
-          <div class="status-row"><span class="status-label">Mode</span><span id="modeValue" class="status-value">—</span></div>
-          <div class="status-row"><span class="status-label">Permission</span><span id="permissionValue" class="status-value">—</span></div>
-          <div class="status-row"><span class="status-label">Connection</span><span id="connectionValue" class="status-value">—</span></div>
-          <div class="status-row"><span class="status-label">Motion ready</span><span id="motionReadyValue" class="status-value">—</span></div>
-          <div class="status-row"><span class="status-label">Device</span><span id="deviceValue" class="status-value">—</span></div>
-          <div class="status-row"><span class="status-label">Rate</span><span id="rateValue" class="status-value">—</span></div>
-        </div>
-        <div class="button-row">
-          <button id="permissionBtn" class="primary" type="button">Request Permission</button>
-          <button id="calibrateBtn" class="secondary" type="button">Calibrate Neutral</button>
-        </div>
-      </article>
-
       <article class="card posture-card">
         <div class="section-title">
           <h2>Posture</h2>
@@ -136,6 +117,25 @@
           <button id="clearLogBtn" class="ghost small" type="button">Clear</button>
         </div>
         <ul id="eventLog" class="event-log"></ul>
+      </article>
+
+      <article class="card status-card">
+        <div class="section-title">
+          <h2>Sensor</h2>
+          <button id="settingsBtn" class="ghost small" type="button">Settings</button>
+        </div>
+        <div class="status-list">
+          <div class="status-row"><span class="status-label">Mode</span><span id="modeValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Permission</span><span id="permissionValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Connection</span><span id="connectionValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Motion ready</span><span id="motionReadyValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Device</span><span id="deviceValue" class="status-value">—</span></div>
+          <div class="status-row"><span class="status-label">Rate</span><span id="rateValue" class="status-value">—</span></div>
+        </div>
+        <div class="button-row">
+          <button id="permissionBtn" class="primary" type="button">Request Permission</button>
+          <button id="calibrateBtn" class="secondary" type="button">Calibrate Neutral</button>
+        </div>
       </article>
     </section>
   </main>

@@ -13,9 +13,9 @@
       this.samples = [];
       this.state = 'unknown';
       this.score = 0;
-      this.warningHigh = 55;
-      this.slouchHigh = 72;
-      this.warningLow = 35;
+      this.warningHigh = 35;
+      this.slouchHigh = 55;
+      this.warningLow = 20;
     }
 
     calibrate(samples = this.samples) {
