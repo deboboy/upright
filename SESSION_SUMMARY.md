@@ -1,4 +1,66 @@
-# Session Summary — 2026-06-21 / 2026-07-01
+# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07
+
+## Session Resume — 2026-11-07
+
+### What shipped
+
+- **UI reorder** (`web/index.html`): Posture card first, then Focus Timer, Motion, History, Events; Sensor / Settings moved to the bottom. Posture is the primary value; the status card was reference info surfaced too high.
+- **Posture thresholds lowered** (`web/posture-core.js`): `warningHigh 55 → 35`, `slouchHigh 72 → 55`, `warningLow 35 → 20`. Scoring is `|Δpitch| × 160 + |Δroll| × 80` (radians) against calibrated neutral — old `warningHigh = 55` required ~20° of head drop. Observed session averaged 10–12° head drop with avg score **52** (still "good"). New thresholds trigger warning at ~13° and slouch at ~20°, matching the Motion chart's existing ±12° Y-scale.
+- **Version bump → 1.1 (3)** in `ios/Upright/Info.plist` and all four build configurations in `ios/Upright.xcodeproj/project.pbxproj`. Marketing bump reflects the product change; build bump avoids `ITMS-90189` against the existing build **2**.
+- **TestFlight upload (CI)**: workflow run [`42447679340`](https://github.com/deboboy/upright/actions/runs/42447679340) succeeded in 2m19s after both agreements were re-accepted. Build **1.1 (3)** is **Processing** in App Store Connect.
+- **Physical-device run** verified before upload: `xcodebuild` for `platform=iOS,id=…` + `xcrun devicectl device install app` + `xcrun devicectl device process launch com.lastmyle.upright` installs and relaunches without Xcode GUI. Signing already configured (team `7B4D6525KF`, bundle `com.lastmyle.upright`).
+
+### Issues resolved
+
+#### 15. TestFlight CI archive failed — Program License Agreement not accepted
+
+**Symptom:** GitHub Actions run [`42447264456`](https://github.com/deboboy/upright/actions/runs/42447264456) failed in **Build archive** with:
+
+```
+error: Unable to process request - PLA Update available: You currently don't have access
+to this membership resource. To resolve this issue, your team's Account Holder, Frank
+Martinez, must agree to the latest Program License Agreement.
+error: No profiles for 'com.lastmyle.upright' were found: Xcode couldn't find any iOS App
+Development provisioning profiles matching 'com.lastmyle.upright'.
+```
+
+**Cause:** Apple published a new Program License Agreement; team cannot sign or fetch provisioning profiles until the Account Holder accepts it. The "no profiles" error is a downstream symptom.
+
+**Fix:** Account Holder accepted the updated PLA at [developer.apple.com/account](https://developer.apple.com/account). Re-triggering the workflow then let archive + export succeed.
+
+#### 16. TestFlight CI upload failed — Free Apps Agreement expired
+
+**Symptom:** Archive and export succeeded, but the **Upload to TestFlight** step returned HTTP 403 `FORBIDDEN.REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED` with `links.see = "/business"`.
+
+**Cause:** Separate from the PLA — App Store Connect's own Business agreements (Free Apps / Paid Apps) also need to be in effect for the `iris` upload API to accept new builds. A PLA refresh invalidated the Free Apps Agreement.
+
+**Fix:** Accepted the pending agreement at [appstoreconnect.apple.com/business](https://appstoreconnect.apple.com/business), then re-ran the failed job:
+
+```bash
+gh run rerun 42447679340 --failed
+```
+
+Re-run succeeded end-to-end in 2m19s. Build **1.1 (3)** is now queued in TestFlight.
+
+### Your next steps
+
+1. [ ] Wait 5–15 min for App Store Connect to finish processing build **1.1 (3)**.
+2. [ ] Confirm build status reaches **Ready to Test** (should be automatic — `ITSAppUsesNonExemptEncryption = false` is already set in `Info.plist`).
+3. [ ] TestFlight → **Internal Testing** → enable build **1.1 (3)** for your existing internal group.
+4. [ ] Add friends' Apple ID emails to the same internal group.
+5. [ ] Share `docs/testflight.md` as the tester brief.
+
+### Debug playbook (for future PLA / agreement breaks)
+
+When a CI build suddenly fails after months of working:
+
+1. `gh run list --workflow=testflight.yml --limit 5` — find the failing run ID.
+2. `gh run view <id> --log-failed | tail -60` — the actual Apple error is near the bottom.
+3. If the message mentions **PLA** or **provisioning profile**, Account Holder opens [developer.apple.com/account](https://developer.apple.com/account) and accepts the updated PLA.
+4. If the message mentions **REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED** or **/business**, Account Holder opens [appstoreconnect.apple.com/business](https://appstoreconnect.apple.com/business) and accepts the pending Free Apps / Paid Apps agreement.
+5. `gh run rerun <id> --failed` to re-trigger without a new commit (no version bump needed if the upload step is what failed — the build never landed).
+
+---
 
 ## Goal
 
