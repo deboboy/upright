@@ -5,6 +5,7 @@ enum BridgeError: Error, LocalizedError {
     case permissionDenied
     case unsupportedDevice
     case motionUnavailable
+    case audioRouteMissing
     case alreadyActive
     case notStarted
     case unknown(String)
@@ -15,6 +16,7 @@ enum BridgeError: Error, LocalizedError {
         case .permissionDenied: return "permission_denied"
         case .unsupportedDevice: return "unsupported_device"
         case .motionUnavailable: return "motion_unavailable"
+        case .audioRouteMissing: return "audio_route_missing"
         case .alreadyActive: return "already_active"
         case .notStarted: return "not_started"
         case .unknown: return "unknown"
@@ -27,6 +29,7 @@ enum BridgeError: Error, LocalizedError {
         case .permissionDenied: return "Headphone motion permission denied"
         case .unsupportedDevice: return "Supported AirPods are not connected"
         case .motionUnavailable: return "Headphone motion is temporarily unavailable"
+        case .audioRouteMissing: return "AirPods are not the active audio route — play any audio to wake them up, then tap Start Session."
         case .alreadyActive: return "Motion updates are already active"
         case .notStarted: return "Motion updates have not started"
         case .unknown(let message): return message

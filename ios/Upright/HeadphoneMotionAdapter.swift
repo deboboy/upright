@@ -111,6 +111,14 @@ final class HeadphoneMotionAdapter: NSObject, CMHeadphoneMotionManagerDelegate {
             onError(.motionUnavailable)
             return
         }
+        // CMHeadphoneMotionManager will silently emit zero samples when the
+        // AirPods are paired but not the active audio route (common after
+        // handoff to another Mac/iPad). Block the session before it starts so
+        // the user doesn't stare at a frozen posture score.
+        guard Self.hasBluetoothHeadphonesInAudioRoute() else {
+            onError(.audioRouteMissing)
+            return
+        }
 
         if manager.isDeviceMotionActive {
             manager.stopDeviceMotionUpdates()

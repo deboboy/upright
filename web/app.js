@@ -358,6 +358,14 @@ async function startSession() {
     log('Session started.');
   } catch (error) {
     log(`Start failed: ${error.message}`);
+    // Surface audio-route failures prominently in the Posture card. Paired-
+    // but-not-routed AirPods are the single most common reason a session
+    // starts "empty" — show the user what to do instead of leaving the
+    // Posture card stuck on "Start a session to begin tracking."
+    const message = error?.message || '';
+    if (message.toLowerCase().includes('audio route') || message.toLowerCase().includes('not the active audio')) {
+      els.postureCopy.textContent = message;
+    }
   }
 }
 
@@ -418,7 +426,12 @@ async function handleMotion(sample) {
 async function calibrate() {
   try {
     const result = await bridge.headphones.calibrateNeutral();
-    engine.neutral = result.neutral || engine.calibrate();
+    // The native bridge may return undefined if the WKScriptMessageHandler
+    // reply drops (seen in the Events log as `undefined is not an object
+    // (evaluating 'result.neutral')`). Optional chaining tolerates that and
+    // falls through to the local averaging path below.
+    const native = result?.neutral;
+    engine.neutral = native && typeof native.pitch === 'number' ? native : engine.calibrate();
     log(`Neutral calibrated: pitch ${radiansToDegrees(engine.neutral.pitch).toFixed(1)}°, roll ${radiansToDegrees(engine.neutral.roll).toFixed(1)}°`);
   } catch (error) {
     engine.calibrate();
