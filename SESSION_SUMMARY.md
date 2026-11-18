@@ -1,4 +1,101 @@
-# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07
+# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07 / 2026-11-17
+
+## Session Resume — 2026-11-17
+
+### What shipped (three CI builds in one evening)
+
+- **Build 1.1 (5)** — audio-route guard on Start Session + first-pass calibration defensive fix. Added `BridgeError.audioRouteMissing` with a user-facing message, guarded `HeadphoneMotionAdapter.startUpdates` behind `hasBluetoothHeadphonesInAudioRoute()`, and surfaced the error in the Posture card copy instead of silently leaving it on "Start a session to begin tracking." Hardened `web/app.js` calibration with optional chaining against `undefined` reply.
+- **Build 1.1 (6)** — branded app icon. Replaced the Xcode-template placeholder (teal background, yellow ring, blank white face) with the stacked-dots mark: three circles vertically centered on the off-white brand background colored with the existing posture palette (`#0d9488` good, `#d97706` warn, `#e11d48` bad). Source SVG preserved at `build/icon-previews/option-a-stacked-dots.svg`; PNG rendered with ImageMagick at 1024×1024, 8-bit sRGB, no alpha (Apple requirement).
+- **Build 1.1 (7)** — the actual root-cause fix. See issue #19 below. This is the build to expose to the internal group.
+
+### You went untethered
+
+- Added yourself as an internal tester to the **Upright Friends** group (Account Holder had to add themselves explicitly — not automatic).
+- Installed via the TestFlight invite email on your iPhone; no cable, no Xcode, no `devicectl`.
+- Confirmed the live posture pipeline on the TestFlight build: 597 samples / 24 s session, avg score **37**, posture distribution 72% good / 20% slouch.
+- Workflow going forward: `git push` to `master` → ~3 min CI → TestFlight notification on iPhone → tap **Update**.
+
+### Issues resolved
+
+#### 17. Posture tracking showed Unknown / 0 samples with AirPods "connected"
+
+**Symptom:** Session started, Focus Timer counted down, Motion stayed at 0 samples for 13+ s. Sensor card showed `Permission: granted`, `Connection: connected`, `Motion ready: yes`, **Device: AirPods** (generic — not "Frank's AirPods Pro"), **Rate: —**.
+
+**Cause:** AirPods were paired to the iPhone but the active audio route had drifted to another device (Mac — happens automatically when there's audio activity on the Mac side). `CMHeadphoneMotionManager.isDeviceMotionAvailable` returned `true` because the pairing is still known, but `startDeviceMotionUpdates(...)` emits zero samples until the AirPods are the active audio sink. The generic "AirPods" label in the Sensor card was the smoking gun: `HeadphoneMotionAdapter.connectedDeviceName` falls back to that string only when the audio-route lookup finds nothing.
+
+**Fix:** Play audio on the iPhone to force the route (any clip works). Shipped in build 1.1 (5): a guard in `HeadphoneMotionAdapter.startUpdates` that refuses to start when no Bluetooth headphone port is in the active route, surfacing the reason in both the Events log and the Posture card copy.
+
+#### 18. Calibration JS error (long-running, finally diagnosed)
+
+**Symptom:** Events log showed `Calibration fallback used: undefined is not an object (evaluating 'result.neutral')` every time Calibrate Neutral was tapped. The fallback (`engine.calibrate()`) masked the user-visible impact, but the error had been there for weeks.
+
+**First diagnosis (wrong):** I assumed `WKScriptMessageHandlerWithReply` was returning an unexpected shape or an edge-case serialization of `["ok": true, "neutral": [...]]`. Added defensive optional chaining in `web/app.js` as a workaround. That reduced the symptom but didn't fix the cause.
+
+**Actual cause:** See issue #19 — the Reply handler was never active. `result` was always `undefined` because `postMessage` wasn't returning a Promise; JS saw nothing from the native side at all.
+
+**Fix:** Keep the defensive JS (belt-and-suspenders) but ship the real fix in 1.1 (7).
+
+#### 19. "Session started" logged AFTER audio_route_missing error — and the real root cause
+
+**Symptom:** After installing 1.1 (5), testing the new audio-route guard produced a confusing Events log:
+
+```
+9:24:07 PM — Session started.                          ← should not exist
+9:24:07 PM — Error: native_error — AirPods are not...  ← duplicate
+9:24:07 PM — Error: audio_route_missing — AirPods ...
+9:24:07 PM — Starting session…
+```
+
+The audio-route guard fired correctly in Swift, but the JS ran its success path anyway, and a phantom `native_error` event appeared alongside the real `audio_route_missing` one.
+
+**Cause:** `NativeBridge.install` called `configuration.userContentController.add(self, contentWorld:, name:)` — the fire-and-forget `WKScriptMessageHandler` variant. Because `NativeBridge` conforms to **both** `WKScriptMessageHandler` and `WKScriptMessageHandlerWithReply`, the compiler silently picked the plain one. Consequences:
+
+- On the JS side, `postMessage` returned `undefined` instead of a Promise, so every `await bridge.call(...)` resolved to `undefined`. This is what made `result.neutral` throw (issue 18) and what let `await startUpdates(...)` never throw on error.
+- The `WKScriptMessageHandler` extension's closure *was* being invoked on message delivery, and when `handle(...)` called `replyHandler(nil, error)`, that closure dispatched `error` events with `code: "native_error"` — the duplicate.
+
+A separate secondary bug in `NativeBridge.startUpdates` called `reply(NSNull(), replyHandler)` unconditionally after `adapter.startUpdates(...)` returned, which would have been a protocol violation once the Reply handler actually worked.
+
+**Fix (build 1.1 (7)):**
+
+- `addScriptMessageHandler(self, contentWorld:, name:)` instead of `add(self, contentWorld:, name:)` — registers the Reply variant.
+- Track a `replied` flag in `startUpdates` so the success path is skipped when the sync error path already replied, and the async error path skips the reply entirely.
+
+Verified on-device: audio-route test now produces a clean log (`Starting session…` → `Error: audio_route_missing` → `Start failed: ...`), no phantom `Session started`, no duplicate `native_error`, Posture card copy updates to the route-missing message.
+
+### What's in the current master binary
+
+Build **1.1 (7)** at commit `edca6a2` on master:
+
+- All three tonight's commits merged in (`d41ca0a` route guard + defensive calibration JS, `59bc08b` stacked-dots icon, `edca6a2` the real Reply-handler fix)
+- All prior work from 2026-11-07 session (card reorder, lower thresholds, deployment target 15.0)
+
+### Your next steps
+
+1. [ ] In App Store Connect → TestFlight → **Upright Friends** internal group → **Builds** tab, enable **1.1 (7)** for the group. Builds 1.1 (5) and 1.1 (6) can stay or be hidden; 1.1 (7) is strictly newer.
+2. [ ] Update to 1.1 (7) on your iPhone via TestFlight → run the expected-behavior test from the push summary (audio-route guard without music; happy-path with music).
+3. [ ] Check back on Nam-ho's App Store Connect user-invite acceptance (sent 2026-11-07). If Pending, resend; if Accepted, add him to the Upright Friends internal group so he can install 1.1 (7).
+4. [ ] When ready, draft TestFlight tester-facing copy — the current App Description ("Very rough first version of the Upright iOS app.") shows to anyone with TestFlight access to this build and could be sharper for friends.
+
+### Debug playbook additions
+
+For `memory/testflight-ci-failure-patterns.md` or a future runbook — tonight added two new patterns:
+
+- **Paired AirPods but no motion samples**: check Sensor card Device label. "AirPods" (generic) means the audio route lookup found nothing; the AirPods aren't the active sink. Play audio on the iPhone or switch route via Control Center. Guarded in 1.1 (5)+.
+- **`WKScriptMessageHandlerWithReply` registration**: in Swift, `WKUserContentController` has two overloads — `add(_:contentWorld:name:)` registers the plain handler, `addScriptMessageHandler(_:contentWorld:name:)` registers the Reply handler. If your Swift class conforms to **both** protocols, `add(...)` silently picks the plain variant regardless of the `name` string. Symptom on the JS side: `postMessage` returns `undefined` instead of a Promise; every `await bridge.call(...)` resolves to `undefined`.
+
+### Still parked for later (public App Store release)
+
+Per `docs/app-store-assets.md`:
+
+- App Store screenshots (6 shots at iPhone 6.9" / 1320×2868)
+- Marketing site for Support URL and Privacy Policy URL
+- App Store text metadata (name is "Be Upright"; still need subtitle, description, keywords)
+- App Preview video (optional, v1.1+)
+- Privacy Nutrition Label questionnaire
+- Age-rating questionnaire
+- App Review notes (flag the AirPods-reviewer-can't-test problem)
+
+---
 
 ## Session Resume — 2026-11-07
 
