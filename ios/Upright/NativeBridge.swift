@@ -27,7 +27,14 @@ final class NativeBridge: NSObject {
     func install(in configuration: WKWebViewConfiguration) {
         if #available(iOS 14.0, *) {
             configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-            configuration.userContentController.add(self, contentWorld: .page, name: "nativeBridgeWithReply")
+            // addScriptMessageHandler — not add — registers self as a Reply-returning
+            // handler so JS `postMessage` returns a Promise with the native value.
+            // Using plain `add` silently falls back to the fire-and-forget handler
+            // which returns undefined on the JS side; that was the cause of the
+            // long-running "Calibration fallback used: undefined is not an object"
+            // errors and the "Session started" log that appeared even when Swift
+            // returned an error from startUpdates.
+            configuration.userContentController.addScriptMessageHandler(self, contentWorld: .page, name: "nativeBridgeWithReply")
         } else {
             configuration.preferences.javaScriptEnabled = true
             configuration.userContentController.add(self, name: "nativeBridge")
@@ -94,13 +101,25 @@ final class NativeBridge: NSObject {
             return
         }
         let sampleRate = params["sampleRateHz"] as? Int ?? 25
+        // Track whether we've already replied — the adapter's onError can fire
+        // either synchronously (guard failures in startUpdates, e.g. audio route
+        // missing) or asynchronously (stream errors after the session is live).
+        // The sync case must reject the Reply instead of falsely resolving it
+        // with NSNull; the async case must not call the reply at all (already
+        // resolved).
+        var replied = false
         adapter.startUpdates(sampleRateHz: sampleRate) { [weak self] sample in
             self?.dispatch(BridgeEvent(type: "motion", payload: sample.dictionary()))
         } onError: { [weak self] error in
             self?.active = false
             self?.dispatch(BridgeEvent(type: "error", payload: ["code": error.code, "message": error.errorDescription ?? error.code]))
-            self?.reply(error, replyHandler)
+            if !replied {
+                replied = true
+                self?.reply(error, replyHandler)
+            }
         }
+        guard !replied else { return }
+        replied = true
         active = true
         dispatchStatus()
         reply(NSNull(), replyHandler)
