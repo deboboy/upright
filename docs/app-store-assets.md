@@ -52,24 +52,28 @@ Apple requires at least one iPhone screenshot set. For new submissions today, th
 | iPhone 6.7" (iPhone 14 Pro Max class) | 1290 × 2796 | Optional |
 | iPad | — | **Skip** — Upright is iPhone-only |
 
-### Plan — 6 screenshots for Upright
+### Shipped — 4 screenshots at 1320 × 2868
 
-Treat the 6.9" set as canonical. Order matters: the first two are what shows above the fold in the App Store listing.
+Final composites live at `docs/app-store/screenshots/` with a per-shot rationale in that folder's README. Shot order (first two are above the fold):
 
-1. **Hero** — Posture card full-bleed showing a green "good" state, score 0, pill badge. Add a headline overlay: *"Stay stacked. Stay focused."*
-2. **Live tracking** — Posture card with Motion chart visible, score in the warning band. Overlay: *"Real-time posture from your AirPods."*
-3. **Focus Timer** — Timer card with active session. Overlay: *"25-minute focus sessions."*
-4. **History** — History card with 3–4 completed sessions (avg scores, color bars). Overlay: *"Track trends across sessions."*
-5. **Sensor transparency** — Sensor card showing Mode / Permission / Connection / Device. Overlay: *"Zero setup. Just your AirPods."*
-6. **Landing** — First-launch landing card with AirPods silhouette. Overlay: *"Welcome to Upright."*
+1. **Catches your slouch.** — `01-posture-slouch.png` — hero shot, slouch state score 51, coaching copy
+2. **Stay stacked. Stay focused.** — `02-posture-good.png` — good state score 12, reinforces the tagline
+3. **Live motion from your AirPods.** — `03-motion-chart.png` — real pitch + roll chart at 25 Hz
+4. **Every session. Every score.** — `04-history.png` — two real sessions with contrasting color bars
 
-### What we need to produce
+Apple requires at least 3; 4 is above the floor. A planned fifth "Sensor transparency" shot was dropped because the raw capture included a `Start failed: AirPods are not the active audio route…` event in the Events log that would read as a failure state in a marketing context. Worth re-capturing with a cleared Events log before the final submission if we want five.
 
-- [ ] Capture reference screens on a real iPhone 16/17 Pro Max simulator (Simulator → File → New Screen Shot).
-- [ ] Decide on overlay typography and color (likely SF Pro + posture accent gradient).
-- [ ] Composite in Figma / Sketch at 1320 × 2868 with device bezel optional.
-- [ ] Export six **PNG or JPEG** files, sRGB, no alpha.
-- [ ] Localization: only **en-US** at first. Add other locales later if we localize the app.
+A sixth "Landing" shot (first-launch card with AirPods silhouette + "Get started") is also pending — requires uninstalling and reinstalling Be Upright via TestFlight to trigger the `localStorage.upright.landingSeen = false` state, then capturing before tapping through.
+
+Composition pipeline (for regenerating):
+
+- Off-white `#f4f4f5` canvas (matches the app icon background)
+- Two-line bold headline, 108 pt (Arial Bold stands in for SF Pro Display; swap when SF Pro's standalone Bold face becomes easy to address from ImageMagick)
+- Supporting subhead, 42 pt, muted `#52525b`
+- Full-width 3-stop posture-gradient accent (teal → amber → red, 16 px)
+- Raw iPhone screenshot centered, scaled to fit 2180 px tall
+- "Upright" wordmark anchored at bottom center
+- See the `compose_shot` bash function in the Nov 21 session commit for the exact ImageMagick invocation
 
 ---
 
@@ -188,8 +192,8 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 ### Must-haves to submit
 
-- [ ] 1024 × 1024 app icon in the binary
-- [ ] At least 3 screenshots at 1320 × 2868 (iPhone 6.9")
+- [x] 1024 × 1024 app icon in the binary — shipped in build 1.1 (6), stacked-dots mark, lives at `ios/Upright/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`
+- [x] At least 3 screenshots at 1320 × 2868 (iPhone 6.9") — 4 shipped at `docs/app-store/screenshots/`
 - [ ] App Name, Subtitle, Description, Keywords finalized
 - [ ] Support URL live
 - [ ] Privacy Policy URL live
@@ -199,7 +203,8 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 ### Nice-to-haves before submission
 
-- [ ] Full 6-screenshot set
+- [ ] 5th screenshot — "Zero gear. Zero setup." Sensor card shot (needs cleared Events log before re-capture)
+- [ ] 6th screenshot — "Welcome to Upright." Landing card shot (needs app uninstall + fresh TestFlight install to trigger first-launch state)
 - [ ] Promotional text
 - [ ] App Preview video (can wait for v1.1)
 
