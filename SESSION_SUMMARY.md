@@ -45,16 +45,67 @@ Everything remaining is outside this repo:
    - Pick build **1.1 (7)** (or newer) for submission.
 4. [ ] **Hit Submit.** First-review turnaround is usually 24–48 hours.
 
-### Still parked (not blockers for first submission)
+### Later that evening — submitted to App Store Review
 
-- [ ] Fifth screenshot — the "Zero gear. Zero setup." Sensor card shot. Dropped from this round because the raw capture contained a `Start failed` event in the Events log. Easy re-capture with a cleared Events log any time you want to add a fifth shot in App Store Connect (screenshots can be swapped without a new binary).
+After the collateral work above, everything got pasted into App Store Connect and the app was submitted.
+
+**What got pasted / uploaded in ASC:**
+
+- **Media Manager** → "iPhone with Dynamic Island (large display)" slot → all 4 screenshots from `docs/app-store/screenshots/`, in listing order. ASC confirms the slot accepts `1320 × 2868px` (matched our export exactly). First attempt uploaded to the "Product Page Information → Header" slot by mistake, which expects landscape `5244 × 2950` / `3840 × 1646` for Custom Product Pages; wrong destination, not a file problem.
+- **App Information** → Name, Subtitle, Categories, Copyright, Content Rights per `docs/app-store/metadata.md`.
+- **Age Rating** → walked questionnaire, all None/No → **4+**.
+- **App Privacy** → "No, we do not collect data from this app" → short-circuits the Nutrition Label questionnaire. Matches `docs/app-store/site/privacy.md`.
+- **Pricing and Availability** → Free; **China and Vietnam removed** from the territory list.
+- **App Compliance** → Digital Services Act set to **non-trader** for v1 (accepts the EU "non-trader" warning on the listing in exchange for not having to declare Last Myle, LLC's business address right now; easy to flip later). Leftover China mainland compliance rows (Security Assessment, AI Generated Content) show "Active" but will resolve as the availability change propagates — not a blocker.
+- **1.0 Prepare for Submission** → Promotional Text, Description, Keywords, URLs, Build pick **1.1 (7)**, Notes to Reviewer from `docs/app-store/review-notes.md`, contact info (Frank Martinez / frank@lastmyle.co).
+- **Submit.**
+
+**Status:** `1.0 Waiting for Review`. Apple's SLA is 24–48 hours for first review.
+
+### URL deploy + the apex-domain catch
+
+In parallel, the Cursor agent published the three pages into the `lastmyle.co` codebase per the handoff brief. AWS Amplify auto-deployed on push. Pages went live at:
+
+- `https://www.lastmyle.co/upright`
+- `https://www.lastmyle.co/upright/support`
+- `https://www.lastmyle.co/upright/privacy`
+
+Caught a latent bug that would have auto-rejected the review: the **apex domain was not redirecting to `www.`**. `https://lastmyle.co/upright/*` returned 404 while `https://www.lastmyle.co/upright/*` returned 200. If ASC had the bare URLs, Apple's reviewer fetch would have hit the 404.
+
+Verified with `curl -I` on all six variants (3 paths × 2 hostnames). Updated the ASC URL fields to include `www.` on all three. URL fields are editable while the app is Waiting for Review and the reviewer sees the latest values — no resubmission required.
+
+**Follow-up (not urgent):** add a 301 redirect from the apex `lastmyle.co` to `www.lastmyle.co` so this doesn't bite future pages. That's a DNS / Amplify config change in a different repo.
+
+### Open questions, resolved during submission
+
+Two more from `docs/app-store-assets.md`:
+
+- **Release pacing** → Going direct to App Store review (not staying TestFlight-only). Nam-ho's feedback loop was not a gate.
+- **Contact email** → `frank@lastmyle.co` used in ASC App Review Information. Site pages still use `support@lastmyle.co` as the published contact — fine to leave as a different-purpose alias, or swap later if you want everything to go to one inbox.
+
+### Your next steps
+
+1. [ ] **Watch your email** for the App Review result. Three possible outcomes:
+   - **In Review** — reviewer picked up the submission (status turns blue in ASC).
+   - **Ready for Sale** — approved, app is live or scheduled for release.
+   - **Rejected** — email + Resolution Center thread in ASC with reasons. Respond directly in the thread.
+2. [ ] (Non-blocking) Apex-to-www 301 redirect on `lastmyle.co` so bare URLs stop 404ing.
+3. [ ] If **approved**: celebrate. Then real App Store URL replaces the placeholder `https://apps.apple.com/app/be-upright` in `docs/app-store/site/marketing.md` and on the published page.
+4. [ ] If **rejected**: most likely reasons per `docs/app-store/review-notes.md` playbook. Most common for apps like Be Upright is "unable to demonstrate feature" when the reviewer doesn't have motion-capable AirPods — Notes to Reviewer explicitly addresses this, so if it still happens we respond with a pointer back to those notes.
+
+### Still parked (not blockers)
+
+- [ ] Fifth screenshot — the "Zero gear. Zero setup." Sensor card shot. Dropped from this round because the raw capture contained a `Start failed` event in the Events log. Easy re-capture with a cleared Events log any time; screenshots can be swapped in ASC without a new binary.
 - [ ] Sixth screenshot — the "Welcome to Upright." Landing card shot. Requires uninstalling and reinstalling Be Upright via TestFlight to trigger the first-launch state.
-- [ ] App Preview videos (optional, high-leverage; deferred to v1.1 of the listing).
+- [ ] App Preview videos (optional; deferred to v1.1 of the listing).
 - [ ] Nam-ho's feedback on the latest build.
+- [ ] Flip DSA trader status to **trader** and declare Last Myle, LLC's business details if we want to drop the EU "non-trader" warning.
 
-### Last five commits on `master`
+### Last six commits on `master` (collateral + submission milestone)
 
 ```
+<will be updated after this commit>
+46ffba2 Document 2026-11-21 session: App Store collateral complete.
 5f89df9 Draft paste-ready App Review notes.
 73182ba Pivot site plan to lastmyle.co subpaths and add Cursor handoff brief.
 963c970 Finalize App Store text metadata and draft apps.lastmyle.co site copy.
@@ -62,7 +113,7 @@ Everything remaining is outside this repo:
 d4590c0 Document 2026-11-17 session: TestFlight untethered, audio-route guard, Reply-handler root cause, branded icon.
 ```
 
-The TestFlight workflow was not triggered by any commit tonight — the path filter excludes `docs/**`. Build **1.1 (7)** is still the current TestFlight build.
+The TestFlight workflow was not triggered by any commit tonight — the path filter excludes `docs/**`. Build **1.1 (7)** remains the current TestFlight build and is the one in App Store Review.
 
 ---
 

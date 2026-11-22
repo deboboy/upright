@@ -194,12 +194,12 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 - [x] 1024 × 1024 app icon in the binary — shipped in build 1.1 (6), stacked-dots mark, lives at `ios/Upright/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`
 - [x] At least 3 screenshots at 1320 × 2868 (iPhone 6.9") — 4 shipped at `docs/app-store/screenshots/`
-- [x] App Name, Subtitle, Description, Keywords finalized — `docs/app-store/metadata.md`
-- [ ] Support URL live — copy drafted at `docs/app-store/site/support.md`, pending publish on `lastmyle.co/upright/support` (handoff brief at `docs/app-store/site/cursor-brief.md`)
-- [ ] Privacy Policy URL live — copy drafted at `docs/app-store/site/privacy.md`, pending publish on `lastmyle.co/upright/privacy` (handoff brief at `docs/app-store/site/cursor-brief.md`)
-- [ ] Privacy Nutrition Label completed
-- [ ] Age rating questionnaire completed
-- [x] Review notes written — `docs/app-store/review-notes.md` (paste-ready)
+- [x] App Name, Subtitle, Description, Keywords finalized — `docs/app-store/metadata.md`, pasted into App Store Connect 2026-11-21
+- [x] Support URL live — `https://www.lastmyle.co/upright/support` (apex `lastmyle.co` returns 404; ASC uses www; apex→www redirect is a follow-up)
+- [x] Privacy Policy URL live — `https://www.lastmyle.co/upright/privacy` (same apex caveat)
+- [x] Privacy Nutrition Label completed — "No, we do not collect data from this app"
+- [x] Age rating questionnaire completed — 4+
+- [x] Review notes written — `docs/app-store/review-notes.md`, pasted into App Store Connect
 
 ### Nice-to-haves before submission
 
