@@ -94,7 +94,7 @@ focus,timer,pomodoro,ergonomics,slouch,neck pain,back pain,wfh,desk,sitting,well
 | **Contact — Email** | `frank@lastmyle.co` |
 | **Contact — Phone** | (fill in) |
 | **Demo account** | N/A (no sign-in) |
-| **Notes to reviewer** | See `docs/app-store/review-notes.md` (to be drafted next session) |
+| **Notes to reviewer** | See `docs/app-store/review-notes.md` for the paste-ready text and rationale. |
 
 The Notes to Reviewer field must call out that Upright requires motion-capable AirPods (Pro / Max / 3rd gen) to demonstrate the posture-tracking path. Without them, the Sensor card shows `disconnected` and the Posture card stays on `Unknown`. This is the single most common cause of App Review rejections for headphone-motion apps.
 

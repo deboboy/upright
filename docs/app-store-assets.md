@@ -199,7 +199,7 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 - [ ] Privacy Policy URL live — copy drafted at `docs/app-store/site/privacy.md`, pending publish on `lastmyle.co/upright/privacy` (handoff brief at `docs/app-store/site/cursor-brief.md`)
 - [ ] Privacy Nutrition Label completed
 - [ ] Age rating questionnaire completed
-- [ ] Review notes written
+- [x] Review notes written — `docs/app-store/review-notes.md` (paste-ready)
 
 ### Nice-to-haves before submission
 
