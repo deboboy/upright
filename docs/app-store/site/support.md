@@ -1,6 +1,6 @@
 # Be Upright — support page
 
-Source copy for `https://apps.lastmyle.co/upright/support`. Must resolve to HTTP 200 before App Store submission.
+Source copy for `https://lastmyle.co/upright/support`. Must resolve to HTTP 200 before App Store submission.
 
 ---
 

@@ -195,8 +195,8 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 - [x] 1024 × 1024 app icon in the binary — shipped in build 1.1 (6), stacked-dots mark, lives at `ios/Upright/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`
 - [x] At least 3 screenshots at 1320 × 2868 (iPhone 6.9") — 4 shipped at `docs/app-store/screenshots/`
 - [x] App Name, Subtitle, Description, Keywords finalized — `docs/app-store/metadata.md`
-- [ ] Support URL live — copy drafted at `docs/app-store/site/support.md`, pending `apps.lastmyle.co` build
-- [ ] Privacy Policy URL live — copy drafted at `docs/app-store/site/privacy.md`, pending `apps.lastmyle.co` build
+- [ ] Support URL live — copy drafted at `docs/app-store/site/support.md`, pending publish on `lastmyle.co/upright/support` (handoff brief at `docs/app-store/site/cursor-brief.md`)
+- [ ] Privacy Policy URL live — copy drafted at `docs/app-store/site/privacy.md`, pending publish on `lastmyle.co/upright/privacy` (handoff brief at `docs/app-store/site/cursor-brief.md`)
 - [ ] Privacy Nutrition Label completed
 - [ ] Age rating questionnaire completed
 - [ ] Review notes written
@@ -219,7 +219,7 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 ## Open questions
 
 1. **Brand identity**: resolved for v1 — stacked-dots icon shipped in 1.1 (6). Future workstream with a designer still possible.
-2. **Marketing site**: resolved — `apps.lastmyle.co` subdomain with `/upright`, `/upright/support`, `/upright/privacy` pages. Copy drafted at `docs/app-store/site/`. Subdomain + pages need to be stood up and reach HTTP 200 before App Store submission.
+2. **Marketing site**: resolved — pages published as subpaths on the main `lastmyle.co` site at `/upright`, `/upright/support`, `/upright/privacy`. (Original plan was a separate `apps.lastmyle.co` subdomain; pivoted on 2026-11-21 to ride the existing site for velocity.) Copy drafted at `docs/app-store/site/`; Cursor handoff brief at `docs/app-store/site/cursor-brief.md`. Pages need to be published and reach HTTP 200 before App Store submission.
 3. **Legal entity on the App Store listing**: resolved — `Last Myle, LLC`. (Note: the bundle ID `com.lastmyle.upright` and related technical identifiers stay lowercased and unspaced because bundle IDs can't contain spaces and are immutable for a published app.)
 4. **Telemetry decision**: tentatively zero-collection for v1. Drafted privacy policy declares "no data collected" accordingly. If this changes, update `docs/app-store/site/privacy.md` and the Privacy Nutrition Label in App Store Connect before shipping that version.
 5. **Release pacing**: TestFlight-only for now while friends provide feedback. Public App Store submission is still blocked on subdomain + remaining questionnaires.

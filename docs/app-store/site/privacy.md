@@ -1,6 +1,6 @@
 # Be Upright — privacy policy
 
-Source copy for `https://apps.lastmyle.co/upright/privacy`. Must resolve to HTTP 200 before App Store submission.
+Source copy for `https://lastmyle.co/upright/privacy`. Must resolve to HTTP 200 before App Store submission.
 
 ---
 

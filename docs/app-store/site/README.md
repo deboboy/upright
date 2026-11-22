@@ -1,22 +1,22 @@
 # Be Upright — marketing site content
 
-Source copy for the three pages that need to be live at `apps.lastmyle.co` before Be Upright can be submitted to the App Store.
+Source copy for the three pages that need to be live on `lastmyle.co` before Be Upright can be submitted to the App Store.
+
+Publishing happens in the `lastmyle.co` codebase (a separate repo), not in this one. The handoff brief for the Cursor agent working that repo is at [`cursor-brief.md`](./cursor-brief.md).
 
 ## URL plan
 
 | URL | Source file | Purpose |
 |---|---|---|
-| `https://apps.lastmyle.co/upright` | `marketing.md` | Marketing / landing page. Referenced from App Store Connect as the optional Marketing URL. |
-| `https://apps.lastmyle.co/upright/support` | `support.md` | Support page. **Required by Apple** — Support URL in App Store Connect must resolve to HTTP 200. |
-| `https://apps.lastmyle.co/upright/privacy` | `privacy.md` | Privacy policy. **Required by Apple** — Privacy Policy URL in App Store Connect must resolve to HTTP 200. |
+| `https://lastmyle.co/upright` | `marketing.md` | Marketing / landing page. Referenced from App Store Connect as the optional Marketing URL. |
+| `https://lastmyle.co/upright/support` | `support.md` | Support page. **Required by Apple** — Support URL in App Store Connect must resolve to HTTP 200. |
+| `https://lastmyle.co/upright/privacy` | `privacy.md` | Privacy policy. **Required by Apple** — Privacy Policy URL in App Store Connect must resolve to HTTP 200. |
 
-The `/upright` subpath leaves room for future apps at `/<other-app>` under the same `apps.lastmyle.co` subdomain.
+The `/upright` subpath leaves room for future Last Myle apps to live at `/<other-app>` under the same domain.
 
 ## Content status
 
-All three files are **Markdown source only** — no HTML, CSS, or deploy tooling in this directory. When you stand up `apps.lastmyle.co`, you choose the static site generator / framework / deploy path separately and drop this copy in.
-
-If you want the pages prototyped as styled static HTML (matching the app palette and the stacked-dots icon), say so and I'll build a `site/` directory with real HTML + CSS ready to deploy to Vercel / Netlify / Cloudflare Pages.
+All three files are **Markdown source only** — no HTML, CSS, or deploy tooling in this directory. The `lastmyle.co` codebase (whatever framework it uses) is where these get turned into real pages; `cursor-brief.md` tells that codebase's agent what to do.
 
 ## Things that still need a decision before publish
 

@@ -1,6 +1,6 @@
 # Be Upright — marketing page
 
-Source copy for `https://apps.lastmyle.co/upright`.
+Source copy for `https://lastmyle.co/upright`.
 
 ---
 

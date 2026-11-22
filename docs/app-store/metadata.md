@@ -22,13 +22,13 @@ Paste-ready values for the Be Upright listing. Last reviewed 2026-11-21.
 
 ## Marketing & support URLs
 
-All three resolve on the planned `apps.lastmyle.co` subdomain. **Submission is blocked until these are live**. Page content drafted in `docs/app-store/site/`.
+All three live as subpaths on the main `lastmyle.co` site. **Submission is blocked until these are published**. Page content drafted in `docs/app-store/site/`; handoff brief for the `lastmyle.co` codebase at `docs/app-store/site/cursor-brief.md`.
 
 | Field | URL | Required? | Status |
 |---|---|---|---|
-| **Marketing URL** | `https://apps.lastmyle.co/upright` | optional | pending subdomain |
-| **Support URL** | `https://apps.lastmyle.co/upright/support` | required | pending subdomain |
-| **Privacy Policy URL** | `https://apps.lastmyle.co/upright/privacy` | required | pending subdomain |
+| **Marketing URL** | `https://lastmyle.co/upright` | optional | pending publish |
+| **Support URL** | `https://lastmyle.co/upright/support` | required | pending publish |
+| **Privacy Policy URL** | `https://lastmyle.co/upright/privacy` | required | pending publish |
 
 ## Promotional text — 170 char limit
 
@@ -100,7 +100,7 @@ The Notes to Reviewer field must call out that Upright requires motion-capable A
 
 ## Order of operations for submission
 
-1. Stand up `apps.lastmyle.co` with the three pages from `docs/app-store/site/`.
+1. Publish the three pages from `docs/app-store/site/` onto `lastmyle.co` at `/upright`, `/upright/support`, `/upright/privacy`. Handoff brief for the Cursor agent working the `lastmyle.co` codebase: `docs/app-store/site/cursor-brief.md`.
 2. Verify each of the three URLs returns HTTP 200.
 3. Fill in the fields above in App Store Connect.
 4. Upload the four screenshots from `docs/app-store/screenshots/`.
