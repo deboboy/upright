@@ -114,7 +114,7 @@ These live in App Store Connect and can be edited without a new build, except **
 | **Support URL** | — | TBD — need a landing page (lastmyle.co/upright?) |
 | **Marketing URL** | optional | — |
 | **Privacy Policy URL** | required | TBD — must be live before submission |
-| **Copyright** | — | *© 2026 LastMyle* (adjust to legal entity name) |
+| **Copyright** | — | *© 2026 Last Myle* (adjust to legal entity name) |
 | **Primary category** | — | **Health & Fitness** (recommended) |
 | **Secondary category** | — | **Productivity** (focus timer angle) |
 
@@ -194,9 +194,9 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 - [x] 1024 × 1024 app icon in the binary — shipped in build 1.1 (6), stacked-dots mark, lives at `ios/Upright/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png`
 - [x] At least 3 screenshots at 1320 × 2868 (iPhone 6.9") — 4 shipped at `docs/app-store/screenshots/`
-- [ ] App Name, Subtitle, Description, Keywords finalized
-- [ ] Support URL live
-- [ ] Privacy Policy URL live
+- [x] App Name, Subtitle, Description, Keywords finalized — `docs/app-store/metadata.md`
+- [ ] Support URL live — copy drafted at `docs/app-store/site/support.md`, pending `apps.lastmyle.co` build
+- [ ] Privacy Policy URL live — copy drafted at `docs/app-store/site/privacy.md`, pending `apps.lastmyle.co` build
 - [ ] Privacy Nutrition Label completed
 - [ ] Age rating questionnaire completed
 - [ ] Review notes written
@@ -218,11 +218,12 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 ## Open questions
 
-1. **Brand identity**: do we have a logo/wordmark locked, or is this a parallel workstream with an outside designer?
-2. **Marketing site**: where will Support URL and Privacy Policy live? Does `lastmyle.co` already host content, or do we need to stand that up?
-3. **Legal entity on the App Store listing**: `LastMyle` as a DBA, LLC, or individual developer account? Shown publicly under the app name.
-4. **Telemetry decision**: will v1 be truly zero-collection, or do we want crash/usage reporting? Changes the Privacy Nutrition Label.
-5. **Release pacing**: TestFlight-only for a while, or submit to public App Store once Nam-ho and other friends give feedback?
+1. **Brand identity**: resolved for v1 — stacked-dots icon shipped in 1.1 (6). Future workstream with a designer still possible.
+2. **Marketing site**: resolved — `apps.lastmyle.co` subdomain with `/upright`, `/upright/support`, `/upright/privacy` pages. Copy drafted at `docs/app-store/site/`. Subdomain + pages need to be stood up and reach HTTP 200 before App Store submission.
+3. **Legal entity on the App Store listing**: resolved — `Last Myle, LLC`. (Note: the bundle ID `com.lastmyle.upright` and related technical identifiers stay lowercased and unspaced because bundle IDs can't contain spaces and are immutable for a published app.)
+4. **Telemetry decision**: tentatively zero-collection for v1. Drafted privacy policy declares "no data collected" accordingly. If this changes, update `docs/app-store/site/privacy.md` and the Privacy Nutrition Label in App Store Connect before shipping that version.
+5. **Release pacing**: TestFlight-only for now while friends provide feedback. Public App Store submission is still blocked on subdomain + remaining questionnaires.
+6. **Contact email**: confirm whether `support@lastmyle.co` is the right address (used throughout `docs/app-store/site/` and `metadata.md` as a placeholder). Alternatives: `hello@lastmyle.co`, `frank@lastmyle.co`.
 
 ---
 
