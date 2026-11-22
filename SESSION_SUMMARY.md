@@ -1,4 +1,70 @@
-# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07 / 2026-11-17
+# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07 / 2026-11-17 / 2026-11-21
+
+## Session Resume — 2026-11-21
+
+### What shipped
+
+Four commits, zero new TestFlight builds — this was an App Store collateral push, not a code push. All work scoped to `docs/app-store/`.
+
+- **Commit `7c68b09`** — 4 App Store screenshots at 1320×2868 composited and committed to `docs/app-store/screenshots/`, with a per-shot rationale README. Raw iPhone captures at native 1170×2532 (iPhone 14 class) placed on an off-white brand canvas with Arial Bold two-line headline, muted subhead, full-width posture-gradient accent, and Upright wordmark. ImageMagick compose pipeline.
+- **Commit `963c970`** — App Store Connect text metadata finalized at `docs/app-store/metadata.md` (App Name, Subtitle, Promotional text, Description, Keywords, Categories, Copyright, Seller, URL fields, App Review contact). Draft copy for the three required marketing pages at `docs/app-store/site/marketing.md`, `support.md`, `privacy.md`.
+- **Commit `73182ba`** — Pivoted the marketing-site plan from a dedicated `apps.lastmyle.co` subdomain to subpaths on the main `lastmyle.co` site for velocity. All URL references rewritten; `/upright`, `/upright/support`, `/upright/privacy` stay the same, just hosted on the existing domain. Added `docs/app-store/site/cursor-brief.md` — a self-contained handoff document for the Cursor agent that will add the three pages to the `lastmyle.co` codebase (inline markdown source for all three pages, GitHub raw URLs for the app icon and screenshot assets, design guidance to match the existing site system, SEO/Open Graph per-page settings, testing checklist, non-goals).
+- **Commit `5f89df9`** — Paste-ready **Notes to Reviewer** at `docs/app-store/review-notes.md`. Front-loads the AirPods hardware requirement (which is the #1 rejection risk for headphone-motion apps), gives a 7-step reproduction flow with the audio-route gotcha called out as IMPORTANT, enumerates what the app does *not* do to preempt reject categories, and includes a rejection-response playbook for the four most likely bounce reasons.
+
+### Resolved open questions
+
+Three of the five open questions in `docs/app-store-assets.md` are now closed:
+
+- **Legal entity** → **Last Myle, LLC**. Applied consistently across copyright, seller name, and all site/metadata footers. (Bundle ID stays `com.lastmyle.upright` — bundle IDs can't have spaces and are immutable for published apps.)
+- **Marketing site plan** → subpaths on `lastmyle.co` via Cursor brief in a separate repo. Three required pages drafted.
+- **Telemetry decision** → zero-collection for v1. Privacy policy drafted to match ("no data collected", no analytics, no third parties).
+
+### Things ready to paste / upload when you're ready
+
+| Where | What | Source |
+|---|---|---|
+| App Store Connect → Distribution → App Information | App Name, Subtitle, Categories, Copyright, Seller | `docs/app-store/metadata.md` |
+| App Store Connect → Distribution → Version info | Promotional text, Description, Keywords | `docs/app-store/metadata.md` |
+| App Store Connect → Distribution → iPhone 6.9" Display | 4 screenshot PNGs | `docs/app-store/screenshots/` |
+| App Store Connect → App Review Information | Notes to Reviewer | `docs/app-store/review-notes.md` |
+| `lastmyle.co` repo (Cursor) | Three new pages at `/upright`, `/upright/support`, `/upright/privacy` | `docs/app-store/site/cursor-brief.md` + the three `.md` source files |
+
+### Your next steps
+
+Everything remaining is outside this repo:
+
+1. [ ] **Hand the Cursor brief to the `lastmyle.co` codebase.** Open the file in Cursor inside that repo or paste its contents into the Cursor chat. Expect the agent to flag back on the four items noted at the end of the brief (contact email, last-updated date, CTA destination, nav placement).
+2. [ ] **Verify the three URLs return HTTP 200** once published. Apple's submission validator checks these at submission time.
+3. [ ] **App Store Connect setup** (~30 min total):
+   - Paste all text fields from `metadata.md`.
+   - Upload the four screenshots from `docs/app-store/screenshots/`.
+   - Complete the **Age Rating** questionnaire (expected 4+ — no mature content).
+   - Complete the **App Privacy** questionnaire — pick "Data Not Collected" per the drafted policy. If you later add any analytics or crash reporting, this must be updated before that version ships.
+   - Paste the **Notes to Reviewer** text from `review-notes.md`.
+   - Fill in the Contact phone number under App Review Information.
+   - Pick build **1.1 (7)** (or newer) for submission.
+4. [ ] **Hit Submit.** First-review turnaround is usually 24–48 hours.
+
+### Still parked (not blockers for first submission)
+
+- [ ] Fifth screenshot — the "Zero gear. Zero setup." Sensor card shot. Dropped from this round because the raw capture contained a `Start failed` event in the Events log. Easy re-capture with a cleared Events log any time you want to add a fifth shot in App Store Connect (screenshots can be swapped without a new binary).
+- [ ] Sixth screenshot — the "Welcome to Upright." Landing card shot. Requires uninstalling and reinstalling Be Upright via TestFlight to trigger the first-launch state.
+- [ ] App Preview videos (optional, high-leverage; deferred to v1.1 of the listing).
+- [ ] Nam-ho's feedback on the latest build.
+
+### Last five commits on `master`
+
+```
+5f89df9 Draft paste-ready App Review notes.
+73182ba Pivot site plan to lastmyle.co subpaths and add Cursor handoff brief.
+963c970 Finalize App Store text metadata and draft apps.lastmyle.co site copy.
+7c68b09 Ship 4 App Store screenshots at 1320x2868 and update asset plan.
+d4590c0 Document 2026-11-17 session: TestFlight untethered, audio-route guard, Reply-handler root cause, branded icon.
+```
+
+The TestFlight workflow was not triggered by any commit tonight — the path filter excludes `docs/**`. Build **1.1 (7)** is still the current TestFlight build.
+
+---
 
 ## Session Resume — 2026-11-17
 
