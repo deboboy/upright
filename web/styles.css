@@ -302,7 +302,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
   position: relative;
   display: grid;
   place-items: center;
-  height: 210px;
+  height: 260px;
   border-radius: 22px;
   background:
     radial-gradient(circle, rgba(255,255,255,0.5) 0 58%, transparent 59%),
@@ -327,17 +327,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .gauge strong {
   position: relative;
   z-index: 1;
-  font-size: 3.6rem;
-  letter-spacing: -0.06em;
+  font-size: 6rem;
+  letter-spacing: -0.08em;
   font-weight: 800;
   color: var(--text);
+  line-height: 1;
 }
 .gauge span {
   position: relative;
   z-index: 1;
   color: var(--muted);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 #motionChart {
