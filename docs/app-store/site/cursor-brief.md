@@ -45,7 +45,7 @@ The three pages below are the source of truth. These are also mirrored on GitHub
 
 A real-time posture coach that runs on your AirPods.
 
-[Download on the App Store →](https://apps.apple.com/app/be-upright)
+[Download on the App Store →](https://apps.apple.com/app/be-upright/id6785146509)
 
 ---
 
@@ -99,7 +99,7 @@ Questions? Email [support@lastmyle.co](mailto:support@lastmyle.co) or visit the 
 
 ---
 
-[Download on the App Store →](https://apps.apple.com/app/be-upright)
+[Download on the App Store →](https://apps.apple.com/app/be-upright/id6785146509)
 
 © 2026 Last Myle, LLC. Be Upright is an app by Last Myle.
 ```
@@ -294,14 +294,9 @@ Open Graph + Twitter card:
 
 ## Call-to-action handling
 
-The `/upright` marketing page body includes two `[Download on the App Store →]` calls pointing at `https://apps.apple.com/app/be-upright`. **This URL does not exist yet** — Be Upright has not been approved by Apple at the time of this brief.
+The `/upright` marketing page body includes two `[Download on the App Store →]` calls pointing at `https://apps.apple.com/app/be-upright/id6785146509`. This is the locale-agnostic App Store URL — Apple auto-redirects visitors to their regional storefront. Approved and live as of 2026-11-27.
 
-Two acceptable approaches:
-
-1. **Point the button at the TestFlight public link until approval.** Frank can provide that URL.
-2. **Render the button as disabled / "Coming soon"** until Frank updates this brief with the real App Store URL.
-
-Do not leave the button linking to a 404.
+If the brief's inline marketing content ever drifts out of sync with the live listing (name change, bundle ID change), update both occurrences of the URL above and re-sync from `marketing.md` in the `upright` repo.
 
 ---
 

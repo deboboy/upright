@@ -10,7 +10,7 @@ Source copy for `https://lastmyle.co/upright`.
 
 A real-time posture coach that runs on your AirPods.
 
-[Download on the App Store →](https://apps.apple.com/app/be-upright) <!-- App Store URL will be filled in after approval -->
+[Download on the App Store →](https://apps.apple.com/app/be-upright/id6785146509)
 
 ---
 
@@ -64,7 +64,7 @@ Questions? Email [support@lastmyle.co](mailto:support@lastmyle.co) or visit the 
 
 ---
 
-[Download on the App Store →](https://apps.apple.com/app/be-upright)
+[Download on the App Store →](https://apps.apple.com/app/be-upright/id6785146509)
 
 ---
 

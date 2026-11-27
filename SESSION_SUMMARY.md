@@ -1,4 +1,46 @@
-# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07 / 2026-11-17 / 2026-11-21
+# Session Summary — 2026-06-21 / 2026-07-01 / 2026-11-07 / 2026-11-17 / 2026-11-21 / 2026-11-27
+
+## Session Resume — 2026-11-27 — LIVE ON THE APP STORE
+
+Be Upright is approved and live: **https://apps.apple.com/us/app/be-upright/id6785146509**
+
+Review turnaround was ~6 days (submitted 2026-11-21 evening, approved 2026-11-27). First attempt, first approval — no rejection, no Resolution Center thread. The `docs/app-store/review-notes.md` playbook paid off: the AirPods hardware requirement explanation and the step-by-step reproduction flow likely saved a "unable to demonstrate feature" rejection.
+
+### What changed today
+
+- **CTA URL finalized** across `docs/app-store/site/marketing.md` and the inline copies in `docs/app-store/site/cursor-brief.md`. Swapped the placeholder `https://apps.apple.com/app/be-upright` for the real locale-agnostic form `https://apps.apple.com/app/be-upright/id6785146509`. Chose the locale-agnostic variant (no `/us/` prefix) over the region-locked one Frank first received, so international visitors to `www.lastmyle.co/upright` auto-redirect to their own storefront instead of hitting a "not available in your region" page on the US listing.
+- **Cursor brief updated** to reflect the live URL. The CTA-handling section no longer talks about "does not exist yet" — now points at the real URL and notes it's the locale-agnostic form.
+
+### Your next steps
+
+1. [ ] **Push the same CTA URL update through the `lastmyle.co` repo.** The placeholder is still live on `www.lastmyle.co/upright` until Cursor + Amplify ships the swap. One-line Cursor prompt: *"On the Be Upright pages, replace the two `[Download on the App Store →]` link targets from `https://apps.apple.com/app/be-upright` to `https://apps.apple.com/app/be-upright/id6785146509`. See the updated `docs/app-store/site/marketing.md` in the upright repo for reference."*
+2. [ ] (Optional, non-urgent) Flip the App Store CTA button to use Apple's **Smart App Banner** or **App Store badge** if the Last Myle site has a design system component for that. Current approach is a plain text link — functional but uses the generic site button styling.
+3. [ ] Watch **App Store Connect → Analytics** for install and session counts in the first week. The first 50 installs are usually friends-and-family and bots.
+4. [ ] **Tell Nam-ho** that he can uninstall the TestFlight version and grab the App Store release — avoids him being stuck on the TestFlight build if you push updates via the App Store release channel instead.
+
+### Still parked (now post-launch; most become v1.1 candidates)
+
+- [ ] Apex `lastmyle.co` → `www` 301 redirect. Latent bug that will bite any future page added at the apex.
+- [ ] 5th screenshot (Zero gear Sensor card, re-capture with cleared Events log).
+- [ ] 6th screenshot (Welcome Landing card, requires uninstall + fresh TestFlight install to trigger first-launch state).
+- [ ] App Preview videos (15–30 s, muted-autoplay-safe captions). High leverage on conversion.
+- [ ] Flip DSA trader status if we want to drop the EU "non-trader" warning on the listing.
+- [ ] Nam-ho's feedback on the live build.
+- [ ] Product work for 1.1 — see the "Later (product)" line from the original 2026-07-01 session notes: *"Clarify Haptic/Speak/Reset UI, tune posture thresholds, slouch alerts, history detail view."* Thresholds were already tuned in 2026-11-07 session; the other three remain.
+
+### Timeline, end-to-end
+
+For posterity — total elapsed project time from "repo exists" to "live on App Store":
+
+| Date | Milestone |
+|---|---|
+| 2026-06-21 → 07-01 | First working iPhone build, TestFlight #1 blocked on macOS SDK; moved to GitHub Actions CI; build 1.0 (1) uploaded. |
+| 2026-11-07 | TestFlight install flow proven, posture-thresholds tuned, app icon shipped. |
+| 2026-11-17 | Untethered TestFlight install, audio-route guard, `WKScriptMessageHandlerWithReply` registration root-cause fix. |
+| 2026-11-21 | App Store collateral completed; app submitted for review at `1.1 (7)`. |
+| **2026-11-27** | **Approved. Live on the App Store.** |
+
+---
 
 ## Session Resume — 2026-11-21
 

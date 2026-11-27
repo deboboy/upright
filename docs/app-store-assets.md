@@ -1,5 +1,7 @@
 # App Store Assets Plan
 
+> **Status: LIVE** as of 2026-11-27 — https://apps.apple.com/us/app/be-upright/id6785146509 (or the locale-agnostic https://apps.apple.com/app/be-upright/id6785146509 for marketing use). This doc is now a historical record of the pre-launch plan plus a reference for future listing updates.
+
 Everything the App Store Connect listing for **Be Upright** will need before public launch. TestFlight does not require most of this — it starts to matter when you're ready to submit the app to the public App Store (i.e. move beyond invited testers).
 
 > **Source of truth:** Apple changes sizes and requirements periodically. Before any final export, verify against:
