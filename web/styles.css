@@ -300,8 +300,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .gauge {
   position: relative;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
   height: 210px;
   border-radius: 22px;
   background:
