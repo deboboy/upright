@@ -38,7 +38,54 @@ For posterity — total elapsed project time from "repo exists" to "live on App 
 | 2026-11-07 | TestFlight install flow proven, posture-thresholds tuned, app icon shipped. |
 | 2026-11-17 | Untethered TestFlight install, audio-route guard, `WKScriptMessageHandlerWithReply` registration root-cause fix. |
 | 2026-11-21 | App Store collateral completed; app submitted for review at `1.1 (7)`. |
-| **2026-11-27** | **Approved. Live on the App Store.** |
+| **2026-11-27** | **Approved. Live on the App Store.** First post-launch patch `1.1.1 (10)` submitted for review the same evening. |
+
+---
+
+## Session Resume — 2026-11-27 (evening) — first post-launch patch submitted
+
+### What shipped
+
+- **Posture gauge visual refresh** (`web/styles.css`). Frank flagged that the score number ("51") looked undersized in the main Posture card — ~32% of inner panel height. Shipped as a two-pass iteration:
+  - First pass (1.1.1 (8)): bumped font 3.6rem → 6rem and card height 210px → 260px. On-device review: "doesn't look that much larger" — because the container grew with the font, the ratio only moved from 32% to 42%.
+  - Second pass (1.1.1 (9)): reverted card to 210px, pushed font to 7rem, tightened letter-spacing to -0.09em. Ratio jumped to ~63% of inner height — visibly dominant.
+  - Third pass (1.1.1 (10)): fixed the stacking bug where score sat at the top edge and label at the bottom. Swapped `display: grid; place-items: center` for `display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.6rem`. Grid was centering each item within its cell but letting the rows drift to the container edges; flex centers the pair as a block.
+- **Submitted 1.1.1 (10) for App Store Review** as the first post-launch update. "What's New in This Version" copy described the visual polish without inflating what changed.
+
+### CI firefights
+
+Three new failure modes surfaced during this round of iteration, all now fixed:
+
+- **Train closed after public release (ITMS-90186 + ITMS-90062).** After `1.1 (7)` went live, Apple closed the `1.1` marketing version train — no more uploads allowed on that version string, not even to TestFlight. First `1.1 (8)` upload failed with "CFBundleShortVersionString [1.1] must contain a higher version than that of the previously approved version [1.1]" and "Invalid Pre-Release Train. The train version '1.1' is closed for new build submissions." Fix: bump `CFBundleShortVersionString` to `1.1.1`, not just `CFBundleVersion`. The train stays open for TestFlight iteration on the new version until the next approval closes it.
+- **Max Distribution certificates hit on the Apple Developer account.** After bumping to `1.1.1`, next CI run failed at **archive** step with "Choose a certificate to revoke. Your account has reached the maximum number of certificates." Root cause: our GH Actions pipeline uses `-allowProvisioningUpdates` with automatic signing, and because each macOS runner starts with an empty keychain, Xcode creates a fresh Development certificate every build. After ~8 CI runs we hit Apple's cap (3 Distribution + 2 Development per user). All 7 of the accumulated certs were visible in the Apple Developer portal as "Created via API" Development certs. Fix: revoke the 6 older ones in developer.apple.com → Certificates. Keep the most recent (buffer) + the manually-created local Dev cert + all Distribution certs untouched. Longer-term fix is to export one cert as `.p12` and persist via GitHub Secret, or use `fastlane match` — not needed tonight.
+- **ITMS-90725 iOS 27 SDK deadline warning** (non-blocking). Upload succeeded with: "This app was built with the iOS 26.5 SDK. Starting April 2027, iOS and iPadOS apps must be built with the iOS 27 SDK or later, included in Xcode 27 or later." The GH Actions workflow pins `latest-stable` via `setup-xcode@v1` which currently resolves to Xcode 26.6 / iOS 26.5 SDK. Will auto-resolve to Xcode 27 when Apple releases it, well before the April 2027 deadline.
+
+### Build numbering — now on the 1.1.1 train
+
+The 1.1 train is closed. The 1.1.1 train opened and all subsequent TestFlight iterations go there:
+
+| Build | Purpose |
+|---|---|
+| `1.1.1 (8)` | First attempt at the gauge resize. Score only moderately bigger. |
+| `1.1.1 (9)` | Pushed font-size to 7rem; much more dominant. |
+| `1.1.1 (10)` | Fixed vertical centering of the score+label pair. **Submitted for App Store review.** |
+
+CFBundleVersion continues from `(7)` — Apple only requires uniqueness within a train, not reset per train, and continuity is easier to reason about operationally.
+
+### Your next steps
+
+1. [ ] **Watch App Store Connect for the 1.1.1 review outcome.** Update reviews typically turn around faster than first reviews — often in under 24 hours. Same three possible outcomes as before (In Review / Ready for Sale / Rejected).
+2. [ ] (Optional cleanup) The failed CI runs `46066100466` (1.1 (8) train-closed) and `46066492815` (first 1.1.1 (8) cert-cap) are harmless but visible in GitHub Actions history. If you want them deleted to keep the UI clean: `gh run delete 46066100466 && gh run delete 46066492815`.
+3. [ ] Keep an eye on the Distribution cert count in developer.apple.com — if we ship 1.1.2 and 1.1.3 soon, we'll hit the cap again. Revoke the "Created via API" cert from today (2027/11/27 expiration) once a newer one appears.
+4. [ ] Consider moving to a persisted `.p12` cert in CI (durable fix for the max-certs problem) — see "Longer-term" note in the commit message for `cf7846c`.
+
+### Memory additions
+
+Three new CI-failure patterns worth saving alongside the existing `testflight-ci-failure-patterns.md` entries:
+
+- **Train closed after App Store release** → when a marketing version string goes live, Apple blocks all further uploads on it. Bump `CFBundleShortVersionString` to the next patch (e.g. `1.1` → `1.1.1`) before the next TestFlight upload.
+- **Max certificates on auto-provisioning CI** → `-allowProvisioningUpdates` on a fresh runner creates one Dev cert per build. Revoke old `Created via API` Development certs periodically in developer.apple.com. Keep Distribution untouched. Durable fix is a persisted `.p12`.
+- **ITMS-90725 iOS 27 SDK deadline** (reference) → by April 2027, uploads will require Xcode 27 / iOS 27 SDK. `latest-stable` setup-xcode action will pick this up automatically when Apple ships it; no action needed until then.
 
 ---
 
