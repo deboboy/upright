@@ -190,6 +190,47 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 
 ---
 
+## 9. "New Ways to Market Apps" (post-launch opportunity, surfaced 2026-11-27)
+
+App Store Connect is showing a banner on the version page:
+
+> **New Ways to Market Apps.** Elevate your app's product page with a custom header and refine how your app appears in App Store search results. You can now also upload app previews and screenshots for iPhone Duo, adding support for the latest device.
+
+Three distinct things bundled under one banner. None are blockers for anything we've shipped — all are post-launch upside. Investigate and decide which (if any) to pursue.
+
+### 9a. Custom product-page header
+
+A landscape "hero" image that sits above screenshots on the listing. Apple's current spec (verify at upload time) is **5244 × 2950px** and/or **3840 × 1646px** — this is the "Header Asset" slot in Product Page Information that we accidentally tried uploading screenshots to on 2026-11-21. Lives in ASC → version → Product Page Information → Header and Search Results tab.
+
+Likely worth doing: it's prime real estate above the fold on both the iPhone App Store app and the web listing. Should match the Be Upright brand (off-white background, posture palette, likely the stacked-dots icon enlarged with a tagline). Needs new design work — can be composited the same way as the existing screenshots, or hand off to a designer.
+
+### 9b. Search Results creative
+
+Separate asset that controls how the app appears in App Store search results beyond the default (app icon + name + subtitle + first screenshot). Also in Product Page Information. Spec is typically a portrait variant of the Header image.
+
+Lower priority than 9a — the default rendering (which we already have, via the first screenshot) is usually fine until search ads or a search-heavy acquisition channel enters the picture.
+
+### 9c. iPhone Duo screenshots + previews
+
+Apple's latest device class ("iPhone Duo") has its own screenshot dimensions that we haven't captured for. Inspect the specs in ASC → Media Manager → look for an "iPhone Duo" row (likely has a chevron similar to the existing "iPhone with Dynamic Island" row we used for the 6.9" shots).
+
+Our current 4 screenshots at 1320 × 2868 are the baseline for the Dynamic Island / 6.9" class. Apple will auto-downscale those for smaller device classes, but **does not upscale for Duo**, so the Duo class currently either (a) falls back to the next-largest set with a letterbox, or (b) shows no screenshots on Duo devices — need to verify which in the ASC Media Manager.
+
+If Duo adoption matters for the Upright target audience (ergonomics-conscious knowledge workers who likely buy premium iPhones), this is worth prioritizing. Capture plan is identical to the existing 4-shot set — same sessions, same scroll positions, just screenshot on a Duo device (or render at the Duo resolution in the Simulator).
+
+### How to tackle
+
+Suggested order if we pursue:
+
+1. **Inspect ASC Media Manager** to confirm the Duo slot exists and get the exact dimensions (Apple's specs change; the inline numbers above may be stale).
+2. **Decide whether to invest in a Custom Header design pass** (9a) — biggest marketing lift of the three.
+3. If building a header, use the same ImageMagick composite pipeline (`build/app-store-shots/` convention) and off-white / posture-gradient / stacked-dots visual system we already have.
+4. Duo screenshots (9c) can be captured later during a session with borrowed hardware, or rendered via the Simulator's new iPhone Duo preset.
+
+Not a blocker for 1.1 or 1.1.1. Parked as a product opportunity to revisit when there's design time.
+
+---
+
 ## Launch asset checklist (one-page view)
 
 ### Must-haves to submit
@@ -215,6 +256,7 @@ Apple-featured placements can request bespoke art (1800 × 1200, etc.), but this
 - [ ] Additional locale screenshots + metadata
 - [ ] Press kit page at marketing URL
 - [ ] Social share graphics
+- [ ] "New Ways to Market Apps" opportunities — see section 9 above (Custom Header, Search Results creative, iPhone Duo screenshots)
 
 ---
 
