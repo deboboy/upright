@@ -38,7 +38,7 @@ For posterity — total elapsed project time from "repo exists" to "live on App 
 | 2026-11-07 | TestFlight install flow proven, posture-thresholds tuned, app icon shipped. |
 | 2026-11-17 | Untethered TestFlight install, audio-route guard, `WKScriptMessageHandlerWithReply` registration root-cause fix. |
 | 2026-11-21 | App Store collateral completed; app submitted for review at `1.1 (7)`. |
-| **2026-11-27** | **Approved. Live on the App Store.** First post-launch patch `1.1.1 (10)` submitted for review the same evening. |
+| **2026-11-27** | **Approved. Live on the App Store.** First post-launch patch `1.1.1 (10)` submitted for review the same evening — status: Waiting for Review. |
 
 ---
 
@@ -72,12 +72,27 @@ The 1.1 train is closed. The 1.1.1 train opened and all subsequent TestFlight it
 
 CFBundleVersion continues from `(7)` — Apple only requires uniqueness within a train, not reset per train, and continuity is easier to reason about operationally.
 
+### Submission completed, version-string caveat
+
+ASC returned the "1 Item Submitted" confirmation and moved the version row to **Waiting for Review** with build 10 attached.
+
+Caveat worth watching: when Frank created the new version row in ASC, he entered `1.1` in the version-number prompt (not `1.1.1`). The sidebar label reflects that. But the attached build's `CFBundleShortVersionString` is `1.1.1`, which Apple's upload validator required (the `1.1` train was already closed; see pattern 4 in `memory/testflight-ci-failure-patterns.md`).
+
+Three ways this resolves:
+
+- **Likely:** ASC auto-reconciled the version row to `1.1.1` when build 10 was attached (ASC often syncs the row label to the binary version on attachment). The sidebar "1.1" is stale cache / display quirk and will refresh to "1.1.1".
+- **Possible but less likely:** The row is actually `1.1` in ASC's database; Apple accepted because the binary version (1.1.1) is what gets validated. Store listing will show `1.1.1` because that's the binary version. The row label is internal.
+- **Unlikely:** Genuine mismatch that a reviewer will flag. Apple's validator normally rejects at upload for this, so passing validation is a strong signal that it's fine.
+
+If the review bounces specifically on the version string, the fix is: in ASC → version row → edit the version-number field to `1.1.1` → save → resubmit. Doesn't require a new build.
+
 ### Your next steps
 
-1. [ ] **Watch App Store Connect for the 1.1.1 review outcome.** Update reviews typically turn around faster than first reviews — often in under 24 hours. Same three possible outcomes as before (In Review / Ready for Sale / Rejected).
-2. [ ] (Optional cleanup) The failed CI runs `46066100466` (1.1 (8) train-closed) and `46066492815` (first 1.1.1 (8) cert-cap) are harmless but visible in GitHub Actions history. If you want them deleted to keep the UI clean: `gh run delete 46066100466 && gh run delete 46066492815`.
-3. [ ] Keep an eye on the Distribution cert count in developer.apple.com — if we ship 1.1.2 and 1.1.3 soon, we'll hit the cap again. Revoke the "Created via API" cert from today (2027/11/27 expiration) once a newer one appears.
-4. [ ] Consider moving to a persisted `.p12` cert in CI (durable fix for the max-certs problem) — see "Longer-term" note in the commit message for `cf7846c`.
+1. [ ] **After the "1 Item Submitted" modal closes, verify the version row displays as `1.1.1` in the sidebar.** If it still says `1.1`, edit the row's version-number field to `1.1.1` — ASC allows editing until review starts.
+2. [ ] **Watch App Store Connect for the 1.1.1 review outcome.** Update reviews typically turn around faster than first reviews — often in under 24 hours. Same three possible outcomes as before (In Review / Ready for Sale / Rejected).
+3. [ ] (Optional cleanup) The failed CI runs `46066100466` (1.1 (8) train-closed) and `46066492815` (first 1.1.1 (8) cert-cap) are harmless but visible in GitHub Actions history. If you want them deleted to keep the UI clean: `gh run delete 46066100466 && gh run delete 46066492815`.
+4. [ ] Keep an eye on the Distribution cert count in developer.apple.com — if we ship 1.1.2 and 1.1.3 soon, we'll hit the cap again. Revoke the "Created via API" cert from today (2027/11/27 expiration) once a newer one appears.
+5. [ ] Consider moving to a persisted `.p12` cert in CI (durable fix for the max-certs problem) — see "Longer-term" note in the commit message for `cf7846c`.
 
 ### Memory additions
 
